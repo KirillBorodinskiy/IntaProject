@@ -5,7 +5,7 @@ from django.shortcuts import render
 def index(request):
     r = range(11)
     n = [0,1,2,3,4,5,6,7,8,9,10]
-    l = ['z','a','b','c','d','e','f','g','h','i','j']
+    l = ['Z','A','B','C','D','E','F','G','H','I','J']
     rn = list(zip(r, n))
     rl = list(zip(r, l))
     context = {

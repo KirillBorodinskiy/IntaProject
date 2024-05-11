@@ -7,35 +7,39 @@
     <link rel="stylesheet" type="text/css" href="{% static "application/style.css" %}">
 </head>
 <body>
-    <div class="left_side">
     <div class = "grid grid1">
-    {% for i,letter in rl %}
-    {% for j,number in rn %}
-{% comment %} {% for i in range %}
-{% for j in range %} {% endcomment %}
-    {% if i == 0 %}
-        {% if j == 0%}
-            <div class="horizontal_block naming_block"></div>
-        {% else %}
-            <div class="horizontal_block naming_block">{{number}}</div>
-        {% endif %}
-    {% elif j == 0 %}
-        <div class=" vertical_block naming_block">{{letter}}</div>
-    {% else %}
-        <div class="block block1 block_id_{{i}}">{{i}}</div>
-    {% endif %}
-
-    
-{% endfor %}
-{% endfor %}
-</div>
-</div>
-<div class = "grid grid2">
-    {% for i in range %}
-    {% for j in range %}
-        <div class="block block2"></div>
-    {% endfor %}
-    {% endfor %}
+        {% for i,letter in rl %}
+            {% for j,number in rn %}
+                {% if i == 0 %}
+                    {% if j == 0%}
+                        <div class="horizontal_block naming_block1 naming_block"></div>
+                    {% else %}
+                        <div class="horizontal_block naming_block1 naming_block">{{number}}</div>
+                    {% endif %}
+                {% elif j == 0 %}
+                    <div class=" vertical_block naming_block1 naming_block">{{letter}}</div>
+                {% else %}
+                    <div class="block block1 block_left_id_{{i}}"></div>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    </div>
+    <div class = "grid grid2">
+        {% for i,letter in rl %}
+            {% for j,number in rn %}
+                {% if i == 0 %}
+                    {% if j == 0%}
+                        <div class="horizontal_block naming_block2 naming_block"></div>
+                    {% else %}
+                        <div class="horizontal_block naming_block2 naming_block">{{number}}</div>
+                    {% endif %}
+                {% elif j == 0 %}
+                    <div class=" vertical_block naming_block2 naming_block">{{letter}}</div>
+                {% else %}
+                    <div class="block block2 block_right_id_{{i}}"></div>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
     </div>
 </body>
 </html>

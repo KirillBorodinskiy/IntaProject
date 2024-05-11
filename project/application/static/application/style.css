@@ -1,3 +1,6 @@
+body{
+    background: url("ship.png") no-repeat center center fixed;
+}
 .grid{        
     display: grid;
     grid-template: repeat(11, 1fr) / repeat(11, 1fr); 
@@ -25,11 +28,21 @@
     background-color: grey;
 }
 .naming_block{
+    display: flex;
+    font-size:20px;
     text-align: center;
-    background: rgb(32, 64, 88);
     border-radius: 3px;
-    margin:2px;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    margin: 2px;
     color:white;
+}
+.naming_block1{
+    background-color:rgb(32, 64, 88);;
+}
+.naming_block2{
+    background-color: #d24f4f;
 }
 @media (max-width: 768px) {
     .grid{
