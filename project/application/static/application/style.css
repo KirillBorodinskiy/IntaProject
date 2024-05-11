@@ -1,0 +1,37 @@
+.grid{        
+    display: grid;
+    grid-template-columns: repeat(10, 1fr); 
+    margin-top: 5em;
+}
+.grid1{
+    float:left;
+    margin-left: 5em;
+}
+.grid2{
+    float:right;
+    margin-right: 5em;
+}
+.block {
+    border-radius:3px;
+    aspect-ratio: 1;
+    width:3em;
+    color: white;
+    margin: 2px;
+}
+.block1{
+    background-color: #85c0d3;
+}
+.block2{
+    background-color: grey;
+}
+@media (max-width: 768px) {
+    .grid{
+        grid-template: repeat(10,1fr);
+        /* grid-gap:2px; */
+    }
+    .grid1, .grid2{
+        float: none;
+        margin-left: 0;
+        margin-right: 0;
+    }
+}

@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Application</title>
+    <link rel="stylesheet" type="text/css" href="{% static "application/style.css" %}">
+</head>
+<body>
+    <div class = "grid grid1">
+{% for i in range %}
+{% for j in range %}
+    <div class="block block1">
+        {% comment %} <h1>{{ i }}</h1> {% endcomment %}
+    </div>
+{% endfor %}
+{% endfor %}
+</div>
+<div class = "grid grid2">
+    {% for i in range %}
+    {% for j in range %}
+        <div class="block block2">
+            {% comment %} <h1>{{ i }}</h1> {% endcomment %}
+        </div>
+    {% endfor %}
+    {% endfor %}
+    </div>
+</body>
+</html>
