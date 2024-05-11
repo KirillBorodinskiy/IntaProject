@@ -1,6 +1,6 @@
 .grid{        
     display: grid;
-    grid-template-columns: repeat(10, 1fr); 
+    grid-template: repeat(11, 1fr) / repeat(11, 1fr); 
     margin-top: 5em;
 }
 .grid1{
@@ -24,9 +24,16 @@
 .block2{
     background-color: grey;
 }
+.naming_block{
+    text-align: center;
+    background: rgb(32, 64, 88);
+    border-radius: 3px;
+    margin:2px;
+    color:white;
+}
 @media (max-width: 768px) {
     .grid{
-        grid-template: repeat(10,1fr);
+        grid-template: repeat(11,1fr);
         /* grid-gap:2px; */
     }
     .grid1, .grid2{
