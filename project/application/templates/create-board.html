@@ -23,23 +23,17 @@
                 <label for="option2">Horizontal</label>
             </div>
         </div>
-
-        {% comment %} <form method="post" action="{% url 'place_ship' %}"> 
-            {% csrf_token %} 
-            <input type="hidden" name="row" id="rowInput">
-            <input type="hidden" name="col" id="colInput">
-            <input type="hidden" name="orientation" id="orientationInput" value="horizontal">  {% endcomment %}
-
-            <div class="grid grid1">
-                {% for row_index, row in board.items %} 
-                    {% for col_index, cell in row.items %}
-                        <div class="block block1" data-row="{{ row_index }}" data-col="{{ col_index }}" 
-                             onclick="updateHiddenFieldsAndSubmit({{ row_index }}, {{ col_index }})"
-                             {% if cell %} occupied {% endif %}>{{ cell }}</div>
-                    {% endfor %}
+        <div class="grid grid1">
+            {% for row_index, row in board.items %} 
+                {% for col_index, cell in row.items %}
+                    <div class="block block1" data-row="{{ row_index }}" data-col="{{ col_index }}" 
+                         onclick="updateHiddenFieldsAndSubmit({{ row_index }}, {{ col_index }})"
+                         {% if cell %} occupied {% endif %}>
+                        {% if cell %} {{ cell }} {% endif %} 
+                    </div>
                 {% endfor %}
-            </div>
-        {% comment %} </form> {% endcomment %}
+            {% endfor %}
+        </div>
 
         <script>
             function updateHiddenFieldsAndSubmit(row, col) {

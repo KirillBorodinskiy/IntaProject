@@ -23,15 +23,12 @@ def create_game(request):
     return render(request, 'create-game.html', {'form': form})
 
 def create_board(request):
-    # Создаем доску 10x10, заполненную пустыми значениями
-    board = [['' for _ in range(10)] for _ in range(10)]
+    # Create an empty 10x10 board as a dictionary
+    board = {row_index: {col_index: '' for col_index in range(10)} for row_index in range(10)}
 
-    # Здесь вы можете добавить логику для размещения кораблей на доске,
-    # если это необходимо. Например:
-    # board[0][0] = 'X'  # Размещаем корабль в верхнем левом углу
+    ShipList = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1]
 
-    ShipList = [4,3,3,2,2,2,1,1,1,1]
-    return render(request, 'create-board.html', {'board': board,'ShipList':ShipList})
+    return render(request, 'create-board.html', {'board': board, 'ShipList': ShipList})
 
 def board(request):
     r = range(11)
@@ -64,7 +61,7 @@ def place_ship(request):
 
         # Возвращаем ответ (можно перенаправить на ту же страницу или другую)
         updated_board = 1
-        
+
         return render(request, 'create-board.html', {'board': updated_board})  # Или другую страницу, если нужно
 
 def register(request):

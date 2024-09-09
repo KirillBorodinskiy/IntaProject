@@ -169,3 +169,42 @@ p a:hover {
     overflow-y: scroll;
     height:20em;
 }
+.grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr); /* 10 equal columns */
+    border-collapse: collapse; /* Remove gaps between cells */
+    width: 300px; /* Adjust as needed */
+    margin: 20px auto; /* Center the grid */
+}
+
+.block {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #ccc; /* Light gray border */
+    text-align: center;
+    cursor: pointer; /* Indicate clickable */
+}
+
+.block:hover {
+    background-color: #f0f0f0; /* Light gray background on hover */
+}
+
+.occupied {
+    background-color: #4CAF50; /* Green for occupied cells (ships) */
+    color: white;
+}
+.board-container {
+    display: inline-block; /* or flex, depending on your layout */
+}
+
+.row-labels {
+    display: flex;
+}
+
+.label {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #ccc;
+    text-align: center;
+    line-height: 30px; /* Vertically center text */
+}
