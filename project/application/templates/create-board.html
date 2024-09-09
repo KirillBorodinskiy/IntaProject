@@ -26,7 +26,7 @@
         <div class="grid grid1">
             {% for row_index, row in board.items %} 
                 {% for col_index, cell in row.items %}
-                    <div class="block block1" data-row="{{ row_index }}" data-col="{{ col_index }}" 
+                    <div id ="grid{{row_index}}{{col_index}}" data-hidden-value="0" class="block block1" data-row="{{ row_index }}" data-col="{{ col_index }}" 
                          onclick="updateHiddenFieldsAndSubmit({{ row_index }}, {{ col_index }})"
                          {% if cell %} occupied {% endif %}>
                         {% if cell %} {{ cell }} {% endif %} 
@@ -37,10 +37,9 @@
 
         <script>
             function updateHiddenFieldsAndSubmit(row, col) {
-                document.getElementById('rowInput').value = row;
-                document.getElementById('colInput').value = col;
-                document.getElementById('orientationInput').value = document.querySelector('input[name="options"]:checked').value;
-                document.querySelector('form').submit(); 
+                const gridId = "grid" + row + col;
+                document.getElementById(gridId).dataset.hiddenValue = 1;
+                document.getElementById(gridId).style.backgroundColor = "#396674";
             }
         </script>
     </body>
