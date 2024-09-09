@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-0v5g9o_ulc%@nt(u3fv3373eosx=(ox5j@3olf*6rp_lmj+#he
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+LOGIN_REDIRECT_URL = '/create-game/'
+STATIC_URL = '/static/'
 
 # Application definition
 

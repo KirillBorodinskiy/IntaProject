@@ -17,7 +17,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from application import views
+from django.contrib.auth import views as auth_views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("", views.index, name='index'),
+    path("", auth_views.LoginView.as_view(), name='index'),
+    path('<int:game_id>/', views.board, name='board'),
+    path('create-game/', views.create_game, name='create_game'),
+    path('create-game/create-board.html/',views.create_board,name='create_board'),
+    path('create-game/place-ship.html/',views.place_ship,name='place_ship'),
+    path("register/",views.register,name='register'),
+    path('login/', auth_views.LoginView.as_view(), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 ]
+

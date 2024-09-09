@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Create your board</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'application/styles.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="currentShip">
+            <div id="Ships">
+                {% for ship in ShipList%}
+                    <div class="ship" id="ship{{ship}}"></div>
+                {% endfor %}
+            </div>
+            <div>
+                <input type="radio" id="option1" name="options" value="vertical">
+                <label for="option1">Vertical</label>
+            </div>
+            <div>
+                <input type="radio" id="option2" name="options" value="horizontal" checked>
+                <label for="option2">Horizontal</label>
+            </div>
+        </div>
+
+        {% comment %} <form method="post" action="{% url 'place_ship' %}"> 
+            {% csrf_token %} 
+            <input type="hidden" name="row" id="rowInput">
+            <input type="hidden" name="col" id="colInput">
+            <input type="hidden" name="orientation" id="orientationInput" value="horizontal">  {% endcomment %}
+
+            <div class="grid grid1">
+                {% for row_index, row in board.items %} 
+                    {% for col_index, cell in row.items %}
+                        <div class="block block1" data-row="{{ row_index }}" data-col="{{ col_index }}" 
+                             onclick="updateHiddenFieldsAndSubmit({{ row_index }}, {{ col_index }})"
+                             {% if cell %} occupied {% endif %}>{{ cell }}</div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% comment %} </form> {% endcomment %}
+
+        <script>
+            function updateHiddenFieldsAndSubmit(row, col) {
+                document.getElementById('rowInput').value = row;
+                document.getElementById('colInput').value = col;
+                document.getElementById('orientationInput').value = document.querySelector('input[name="options"]:checked').value;
+                document.querySelector('form').submit(); 
+            }
+        </script>
+    </body>
+</html>

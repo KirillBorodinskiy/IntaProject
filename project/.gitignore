@@ -1,0 +1,52 @@
+test/
+# Python environment
+.venv/
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+
+# Django settings
+local_settings.py
+
+# Database
+db.sqlite3
+*.sqlite3
+
+# Media files
+media/*
+
+# Static files (if you're collecting them during development)
+staticfiles/*
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+
+# Build artifacts
+dist/
+build/
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# macOS-specific files
+.DS_Store
+
+# Python setuptools
+*.egg-info/
+.eggs/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# dotenv environment variables file
+.env
+
+# Django Debug Toolbar settings
+debug_toolbar.local.py
