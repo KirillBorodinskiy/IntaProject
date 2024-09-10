@@ -11,16 +11,19 @@
         <div class="currentShip">
             <div id="Ships">
                 {% for ship in ShipList%}
-                    <div class="ship" id="ship{{ship}}"></div>
+                    <div class="ship ship{{ship}}"></div>
+
+                    <input type="radio" class="Ship{{ship}}Select" name="shipLength" value="ship{{ship}}">
+                    <label for="vertical">Ship {{ship}}</label>
                 {% endfor %}
             </div>
             <div>
-                <input type="radio" id="option1" name="options" value="vertical">
-                <label for="option1">Vertical</label>
+                <input type="radio" id="vertical" name="options" value="vertical">
+                <label for="vertical">Vertical</label>
             </div>
             <div>
-                <input type="radio" id="option2" name="options" value="horizontal" checked>
-                <label for="option2">Horizontal</label>
+                <input type="radio" id="horizontal" name="options" value="horizontal" checked>
+                <label for="horizontal">Horizontal</label>
             </div>
         </div>
         <div class="grid grid1">
@@ -37,9 +40,54 @@
 
         <script>
             function updateHiddenFieldsAndSubmit(row, col) {
-                const gridId = "grid" + row + col;
-                document.getElementById(gridId).dataset.hiddenValue = 1;
-                document.getElementById(gridId).style.backgroundColor = "#396674";
+                var gridId = "grid" + row + col;
+                var orientationVertical = document.getElementById("vertical").checked;
+
+                for(let ShipLength=1;ShipLength<5;ShipLength++){
+
+                    var currentShip = "Ship"+ShipLength+"Select";
+
+                    var currentShipElements = document.getElementsByClassName(currentShip);
+                    let isChecked = false;
+                    for (const element of currentShipElements) {
+                    if (element.checked) {
+                        isChecked = true;
+                        break;
+                    }
+                    }
+                    if(isChecked){
+                        if(document.getElementById(gridId).dataset.hiddenValue == 1){
+                            if(orientationVertical==true){
+                                for(let i=0;i<ShipLength;i++){
+                                    var gridId = "grid" + (row+i) + col;
+                                    document.getElementById(gridId).dataset.hiddenValue = 0;
+                                    document.getElementById(gridId).style.backgroundColor = "#ADD8E6";
+                                }
+                            }else{
+                                for(let i=0;i<ShipLength;i++){
+                                    var gridId = "grid" + row + (col+i);
+                                    document.getElementById(gridId).dataset.hiddenValue = 0;
+                                    document.getElementById(gridId).style.backgroundColor = "#ADD8E6";
+                                }
+                            }
+                        }else{
+                            if(orientationVertical==true){
+                                for(let i=0;i<ShipLength;i++){
+                                    var gridId = "grid" + (row+i) + col;
+                                    document.getElementById(gridId).dataset.hiddenValue = 1;
+                                    document.getElementById(gridId).style.backgroundColor = "#4CAF50";
+                                }
+                            }else{
+                                for(let i=0;i<ShipLength;i++){
+                                    var gridId = "grid" + row + (col+i);
+                                    document.getElementById(gridId).dataset.hiddenValue = 1;
+                                    document.getElementById(gridId).style.backgroundColor = "#4CAF50";
+                                }
+                            }
+                        }
+
+                    }       
+                }         
             }
         </script>
     </body>

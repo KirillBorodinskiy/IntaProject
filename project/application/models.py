@@ -25,3 +25,10 @@ class Game(models.Model):
     def get_board(self):
         """Получить текущее состояние доски в виде двумерного массива"""
         return json.loads(self.board)
+    
+class ShipPosition(models.Model):
+    row = models.IntegerField()
+    column = models.IntegerField()
+
+    def __str__(self):
+        return f"Row: {self.row}, Column: {self.column}"

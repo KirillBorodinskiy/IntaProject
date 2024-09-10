@@ -3,6 +3,8 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect,get_object_or_404
 from .models import Game
 from .forms import GameCreationForm
+from django.http import JsonResponse
+import json
 
 
 # Create your views here.
@@ -55,9 +57,7 @@ def place_ship(request):
         col = int(request.POST.get('col'))
         orientation = request.POST.get('orientation')
 
-        # Здесь вы реализуете логику размещения корабля на доске, 
-        # учитывая ориентацию (horizontal или vertical)
-        # ...
+
 
         # Возвращаем ответ (можно перенаправить на ту же страницу или другую)
         updated_board = 1
@@ -73,3 +73,21 @@ def register(request):
     else:
         form = UserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
+
+def add_ship_position(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            row = data.get('row')
+            column = data.get('column')
+
+            if row is not None and column is not None:
+                # Save the ship position to the database
+                ship_position = ShipPosition.objects.create(row=row, column=column)
+                return JsonResponse({'status': 'success', 'id': ship_position.id})
+            else:
+                return JsonResponse({'status': 'fail', 'error': 'Row and column are required.'}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'fail', 'error': 'Invalid JSON format.'}, status=400)
+    
+    return JsonResponse({'status': 'fail', 'error': 'Invalid request method.'}, status=405)
