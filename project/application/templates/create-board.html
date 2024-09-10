@@ -38,7 +38,38 @@
             {% endfor %}
         </div>
 
+        <button id="SendButton" onclick="SendIT()">SEND IT</button>
         <script>
+            function SendIT(row, column){
+                const data = {
+                    row: row,
+                    column: column
+                };
+        
+                // Send the data to the server using Fetch API
+                fetch('/add-ship-position/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')  // Ensure CSRF protection for POST requests
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.status === 'success') {
+                        alert('Ship position added successfully! Position ID: ' + result.id);
+                    } else {
+                        alert('Failed to add ship position: ' + result.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+
+            SendIT(5, 4);
+            
             function updateHiddenFieldsAndSubmit(row, col) {
                 var gridId = "grid" + row + col;
                 var orientationVertical = document.getElementById("vertical").checked;
@@ -57,38 +88,44 @@
                     }
                     if(isChecked){
                         if(document.getElementById(gridId).dataset.hiddenValue == 1){
-                            if(orientationVertical==true){
-                                for(let i=0;i<ShipLength;i++){
+                            
+                            for(let i=0;i<ShipLength;i++){
+                                if(orientationVertical==true){
                                     var gridId = "grid" + (row+i) + col;
-                                    document.getElementById(gridId).dataset.hiddenValue = 0;
-                                    document.getElementById(gridId).style.backgroundColor = "#ADD8E6";
-                                }
-                            }else{
-                                for(let i=0;i<ShipLength;i++){
+                                }else{
                                     var gridId = "grid" + row + (col+i);
-                                    document.getElementById(gridId).dataset.hiddenValue = 0;
-                                    document.getElementById(gridId).style.backgroundColor = "#ADD8E6";
+                                }
+                                document.getElementById(gridId).dataset.hiddenValue = 0;
+                                document.getElementById(gridId).style.backgroundColor = "rgb(173, 216, 230)";
+                            }
+                            for (const element of document.getElementsByClassName("ship"+ShipLength)) {
+                                if (element.style.backgroundColor!="rgb(0, 86, 179)") {
+                                    element.style.backgroundColor="rgb(0, 86, 179)";
+                                    break;
                                 }
                             }
                         }else{
-                            if(orientationVertical==true){
-                                for(let i=0;i<ShipLength;i++){
+
+                            for(let i=0;i<ShipLength;i++){
+                                if(orientationVertical==true){
                                     var gridId = "grid" + (row+i) + col;
-                                    document.getElementById(gridId).dataset.hiddenValue = 1;
-                                    document.getElementById(gridId).style.backgroundColor = "#4CAF50";
-                                }
-                            }else{
-                                for(let i=0;i<ShipLength;i++){
+                                }else{
                                     var gridId = "grid" + row + (col+i);
-                                    document.getElementById(gridId).dataset.hiddenValue = 1;
-                                    document.getElementById(gridId).style.backgroundColor = "#4CAF50";
+                                }
+                                document.getElementById(gridId).dataset.hiddenValue = 1;
+                                document.getElementById(gridId).style.backgroundColor = "rgb(76, 175, 80)";
+                            }
+                            for (const element of document.getElementsByClassName("ship"+ShipLength)) {
+                                if (element.style.backgroundColor!="rgb(76, 175, 80)") {
+                                    element.style.backgroundColor="rgb(76, 175, 80)";
+                                    break;
                                 }
                             }
                         }
-
                     }       
                 }         
             }
+            
         </script>
     </body>
 </html>

@@ -26,6 +26,7 @@ urlpatterns = [
     path('create-game/', views.create_game, name='create_game'),
     path('create-game/create-board.html/',views.create_board,name='create_board'),
     path('create-game/place-ship.html/',views.place_ship,name='place_ship'),
+    path('creat-game/add_-ship-position/', views.add_ship_position, name="add_ship_position"),
     path("register/",views.register,name='register'),
     path('login/', auth_views.LoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),

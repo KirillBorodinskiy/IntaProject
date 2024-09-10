@@ -2,6 +2,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse
 from django.shortcuts import render, redirect,get_object_or_404
 from .models import Game
+from .models import ShipPosition
 from .forms import GameCreationForm
 from django.http import JsonResponse
 import json
