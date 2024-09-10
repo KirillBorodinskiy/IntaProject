@@ -92,3 +92,30 @@ def add_ship_position(request):
             return JsonResponse({'status': 'fail', 'error': 'Invalid JSON format.'}, status=400)
     
     return JsonResponse({'status': 'fail', 'error': 'Invalid request method.'}, status=405)
+
+def update_game_cell(request):
+    if request.method == "POST":
+        try:
+            # Parse the JSON request data
+            data = json.loads(request.body)
+            game_id = data.get('game_id')
+            row = data.get('row')
+            col = data.get('col')
+            value = data.get('value')
+
+            # Get the game object
+            game = Game.objects.get(id=game_id)
+
+            # Update the cell using the update_cell method
+            game.update_cell(row, col, value)
+
+            # Return success response
+            return JsonResponse({'status': 'success'})
+        
+        except Game.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Game not found'}, status=404)
+        
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)

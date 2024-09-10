@@ -38,93 +38,135 @@
             {% endfor %}
         </div>
 
-        <button id="SendButton" onclick="SendIT()">SEND IT</button>
         <script>
-            function SendIT(row, column){
+            function updateGameCell(gameId, row, col, value) {
+                // Create the data object to send
                 const data = {
+                    game_id: gameId,
                     row: row,
-                    column: column
+                    col: col,
+                    value: value
                 };
-        
-                // Send the data to the server using Fetch API
-                fetch('/add-ship-position/', {
+            
+                // Get the CSRF token (if needed)
+                const csrftoken = getCookie('csrftoken');
+            
+                // Send a POST request to the Django backend
+                fetch('/update-cell/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')  // Ensure CSRF protection for POST requests
+                        'X-CSRFToken': csrftoken // Only if CSRF protection is enabled
                     },
                     body: JSON.stringify(data)
                 })
                 .then(response => response.json())
                 .then(result => {
                     if (result.status === 'success') {
-                        alert('Ship position added successfully! Position ID: ' + result.id);
+                        console.log('Cell updated successfully');
                     } else {
-                        alert('Failed to add ship position: ' + result.error);
+                        console.error('Error updating cell:', result.message);
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    console.error('Request failed:', error);
                 });
             }
-
-            SendIT(5, 4);
+            
+            // Function to get CSRF token from cookies (if needed for your setup)
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
             
             function updateHiddenFieldsAndSubmit(row, col) {
-                var gridId = "grid" + row + col;
-                var orientationVertical = document.getElementById("vertical").checked;
-
-                for(let ShipLength=1;ShipLength<5;ShipLength++){
-
-                    var currentShip = "Ship"+ShipLength+"Select";
-
-                    var currentShipElements = document.getElementsByClassName(currentShip);
-                    let isChecked = false;
-                    for (const element of currentShipElements) {
-                    if (element.checked) {
-                        isChecked = true;
+                const gridId = "grid" + row + col;
+                const orientationVertical = document.getElementById("vertical").checked;
+            
+                // Find the first checked ship
+                let selectedShipLength = null;
+                for (let ShipLength = 1; ShipLength < 5; ShipLength++) {
+                    const currentShip = "Ship" + ShipLength + "Select";
+                    const isChecked = Array.from(document.getElementsByClassName(currentShip)).some(element => element.checked);
+            
+                    if (isChecked) {
+                        selectedShipLength = ShipLength;
                         break;
                     }
+                }
+            
+                if (selectedShipLength) {
+                    // Check for the maximum number of ships placed
+                    let counterOfTheSameShipLengthPlaced = 0;
+                    for (const element of document.getElementsByClassName("ship" + selectedShipLength)) {
+                        if (element.style.backgroundColor == "rgb(76, 175, 80)") {
+                            counterOfTheSameShipLengthPlaced++;
+                        }
                     }
-                    if(isChecked){
-                        if(document.getElementById(gridId).dataset.hiddenValue == 1){
-                            
-                            for(let i=0;i<ShipLength;i++){
-                                if(orientationVertical==true){
-                                    var gridId = "grid" + (row+i) + col;
-                                }else{
-                                    var gridId = "grid" + row + (col+i);
+                    if (counterOfTheSameShipLengthPlaced == (5 - selectedShipLength)) {
+                        alert("No ships left!")
+                        return; // Maximum ships of this length already placed
+                    }
+            
+                    // Check for adjacent occupied cells
+                    let canPlaceShip = true;
+                    for (let i = 0; i < selectedShipLength; i++) {
+                        const currentRow = orientationVertical ? row + i : row;
+                        const currentCol = orientationVertical ? col : col + i;
+            
+                        // Check current cell and adjacent cells
+                        for (let r = currentRow - 1; r <= currentRow + 1; r++) {
+                            for (let c = currentCol - 1; c <= currentCol + 1; c++) {
+                                if (r >= 0 && r < 10 && c >= 0 && c < 10) { // Check if within bounds
+                                    const adjacentGridId = "grid" + r + c;
+                                    if (document.getElementById(adjacentGridId).dataset.hiddenValue == 1) {
+                                        canPlaceShip = false;
+                                        break; 
+                                    }
                                 }
-                                document.getElementById(gridId).dataset.hiddenValue = 0;
-                                document.getElementById(gridId).style.backgroundColor = "rgb(173, 216, 230)";
                             }
-                            for (const element of document.getElementsByClassName("ship"+ShipLength)) {
-                                if (element.style.backgroundColor!="rgb(0, 86, 179)") {
-                                    element.style.backgroundColor="rgb(0, 86, 179)";
-                                    break;
-                                }
-                            }
-                        }else{
+                            if (!canPlaceShip) break; 
+                        }
+                        if (!canPlaceShip) break;
+                    }
+            
+                    if (canPlaceShip) {
+                        const newColor = "rgb(76, 175, 80)";
+            
+                        for (let i = 0; i < selectedShipLength; i++) {
+                            //If vertical => grid+(row+i)+col
+                            const currentGridId = orientationVertical ? "grid" + (row + i) + col : "grid" + row + (col + i);
+            
+                            document.getElementById(currentGridId).dataset.hiddenValue = 1;
+                            document.getElementById(currentGridId).style.backgroundColor = newColor;
 
-                            for(let i=0;i<ShipLength;i++){
-                                if(orientationVertical==true){
-                                    var gridId = "grid" + (row+i) + col;
-                                }else{
-                                    var gridId = "grid" + row + (col+i);
-                                }
-                                document.getElementById(gridId).dataset.hiddenValue = 1;
-                                document.getElementById(gridId).style.backgroundColor = "rgb(76, 175, 80)";
-                            }
-                            for (const element of document.getElementsByClassName("ship"+ShipLength)) {
-                                if (element.style.backgroundColor!="rgb(76, 175, 80)") {
-                                    element.style.backgroundColor="rgb(76, 175, 80)";
-                                    break;
-                                }
+                        }
+            
+                        // Find the first ship element that's not already colored
+                        const shipElements = document.getElementsByClassName("ship" + selectedShipLength);
+                        for (const element of shipElements) {
+                            if (element.style.backgroundColor != newColor) {
+                                element.style.backgroundColor = newColor;
+                                break;
                             }
                         }
-                    }       
-                }         
+                    } else {
+                        // Handle the case where the ship can't be placed (e.g., show an alert)
+                        alert("Cannot place ship here. There are adjacent ships!");
+                    }
+                } 
             }
+            
             
         </script>
     </body>
