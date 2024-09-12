@@ -2,7 +2,6 @@ from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse
 from django.shortcuts import render, redirect,get_object_or_404
 from .models import Game
-from .models import ShipPosition
 from .forms import GameCreationForm
 from django.http import JsonResponse
 import json
@@ -35,6 +34,11 @@ def create_board(request,game_id):
     request.session['game_id'] = game_id
 
     return render(request, 'create-board.html', {'board': board, 'ShipList': ShipList})
+
+def board_view(request, game_id):
+    game = get_object_or_404(Game, id=game_id)
+    board = game.get_board()  # Use the get_board method to reconstruct the board
+    return render(request, 'application/board.html', {'board': board})
 
 def board(request):
     r = range(11)

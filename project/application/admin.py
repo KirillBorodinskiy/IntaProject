@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ShipPosition
+from .models import *
 
 # Register your models here.
-admin.site.register(ShipPosition)
+admin.site.register(Game)

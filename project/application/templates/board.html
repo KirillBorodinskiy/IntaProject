@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Application</title>
+    <link rel="stylesheet" type="text/css" href="{% static "application/styles.css" %}">
+</head>
+<body>
+    <div class="game-boards container">
+
+        <div class="game-board">
+            <h2>Your Board</h2> {## Add a heading for clarity ##}
+            <table class="board-grid">
+                <thead>
+                    <tr>
+                        <th></th> 
+                        {% for letter in rl|slice:"1:" %} {## Start from the second element to get letters ##}
+                            <th>{{ letter.1 }}</th> 
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in board %}
+                        <tr>
+                            <th>{{ forloop.counter }}</th> 
+                            {% for cell in row %}
+                                <td>
+                                    <div class="block {% if cell == 'S' %}ship{% endif %}"></div> 
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="game-board">
+            <h2>Opponent's Board</h2> {## Add a heading for the opponent's board ##}
+            <table class="board-grid">
+                <thead>
+                    <tr>
+                        <th></th> 
+                        {% for letter in rl|slice:"1:" %} {## Start from the second element to get letters ##}
+                            <th>{{ letter.1 }}</th> 
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in range|slice:"1:" %} {## Iterate to create 10 rows ##}
+                        <tr>
+                            <th>{{ i }}</th> 
+                            {% for j in range|slice:"1:" %} {## Iterate to create 10 columns ##}
+                                <td>
+                                    <div class="block"></div> {## Initially empty for the opponent's board ##}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</body>
+</html>

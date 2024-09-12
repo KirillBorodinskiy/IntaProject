@@ -178,7 +178,31 @@ p a:hover {
     border-collapse: collapse; /* Remove gaps between cells */
     margin: 20px; /* Center the grid */
 }
+.game-boards {
+    display: flex; /* Arrange boards side-by-side */
+    gap: 20px; 
+}
 
+.game-board {
+    border: 1px solid #ccc;
+}
+
+.board-grid {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.board-grid th, .board-grid td {
+    border: 1px solid #ccc;
+    padding: 5px;
+    text-align: center;
+}
+
+.block {
+    width: 20px; /* Adjust as needed */
+    height: 20px;
+    background-color: #eee; /* Or any default color */
+}
 .block {
     width: 30px;
     height: 30px;

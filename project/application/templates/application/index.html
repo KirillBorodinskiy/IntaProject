@@ -1,15 +1,45 @@
-<!-- templates/board.html -->
 {% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Battle Ship Game</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'application/style.css' %}">
+    <title>Application</title>
+    <link rel="stylesheet" type="text/css" href="{% static "application/style.css" %}">
 </head>
 <body>
-   <div>
-        <button>Create a new 
-   </div>
+    <div class = "grid grid1">
+        {% for i,letter in rl %}
+            {% for j,number in rn %}
+                {% if i == 0 %}
+                    {% if j == 0%}
+                        <div class="horizontal_block naming_block1 naming_block"></div>
+                    {% else %}
+                        <div class="horizontal_block naming_block1 naming_block">{{number}}</div>
+                    {% endif %}
+                {% elif j == 0 %}
+                    <div class=" vertical_block naming_block1 naming_block">{{letter}}</div>
+                {% else %}
+                    <div class="block block1 block_left_id_{{i}}"></div>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    </div>
+    <div class = "grid grid2">
+        {% for i,letter in rl %}
+            {% for j,number in rn %}
+                {% if i == 0 %}
+                    {% if j == 0%}
+                        <div class="horizontal_block naming_block2 naming_block"></div>
+                    {% else %}
+                        <div class="horizontal_block naming_block2 naming_block">{{number}}</div>
+                    {% endif %}
+                {% elif j == 0 %}
+                    <div class=" vertical_block naming_block2 naming_block">{{letter}}</div>
+                {% else %}
+                    <div class="block block2 block_right_id_{{i}}"></div>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    </div>
 </body>
 </html>
