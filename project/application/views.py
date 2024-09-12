@@ -94,28 +94,27 @@ def add_ship_position(request):
     return JsonResponse({'status': 'fail', 'error': 'Invalid request method.'}, status=405)
 
 def update_game_cell(request):
-    if request.method == "POST":
-        try:
-            # Parse the JSON request data
-            data = json.loads(request.body)
-            game_id = data.get('game_id')
-            row = data.get('row')
-            col = data.get('col')
-            value = data.get('value')
+  if request.method != 'POST':
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
-            # Get the game object
-            game = Game.objects.get(id=game_id)
+  try:
+    game_id = int(request.POST.get('game_id'))
+    row = int(request.POST.get('row'))
+    col = int(request.POST.get('col'))
+    value = int(request.POST.get('value'))  # Update value type based on your model
+  except (ValueError, TypeError):
+    return JsonResponse({'status': 'error', 'message': 'Invalid data format'})
 
-            # Update the cell using the update_cell method
-            game.update_cell(row, col, value)
+  try:
+    game_board = Game.objects.get(pk=game_id)
+  except Game.DoesNotExist:
+    return JsonResponse({'status': 'error', 'message': 'Game board not found'})
 
-            # Return success response
-            return JsonResponse({'status': 'success'})
-        
-        except Game.DoesNotExist:
-            return JsonResponse({'status': 'error', 'message': 'Game not found'}, status=404)
-        
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+  # Update the board state based on value (replace with your logic)
+  if value == 1:
+    game_board.board[row][col] = 1  # Set cell to occupied
+  else:
+    game_board.board[row][col] = 0  # Set cell to empty
 
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
+  game_board.save()
+  return JsonResponse({'status': 'success', 'message': 'Cell updated successfully'})

@@ -40,7 +40,7 @@
         <button type="submit" onclick="getBoard()">Send it!</button>
 
         <script>
-            document.getElementsByClassName("Ship4Select")[0].checked=true;
+            selectNextAvailableShip();
 
             function updateGameCell(gameId, row, col, value) {
                 // Create the data object to send
@@ -102,98 +102,129 @@
                 }
                 return cookieValue;
             }
-            function updateHiddenFieldsAndSubmit(row, col) {
-                const gridId = "grid" + row + col;
-                const orientationVertical = document.getElementById("vertical").checked;
+
             
-                // Find the first checked ship
-                let selectedShipLength = null;
+            function updateHiddenFieldsAndSubmit(row, col) {
+                // Get the ID of the grid cell being clicked
+                const gridId = "grid" + row + col;
+            
+                // Check if the orientation is vertical
+                const isVertical = document.getElementById("vertical").checked;
+            
+                // Find the length of the currently selected ship
+                const selectedShipLength = findSelectedShipLength();
+            
+                // If no ship is selected, alert the user and return
+                if (!selectedShipLength) {
+                    document.getElementsByClassName("Ship4Select")[0].checked=true;
+                    return;
+                }
+            
+                // Check if the maximum number of ships of the selected length has been placed
+                if (hasReachedMaxShips(selectedShipLength)) {
+                    // If the max is reached, select the next available ship checkbox
+                    selectNextAvailableShip();
+                    return; 
+                }
+            
+                // Check if the ship can be placed at the specified location
+                if (!canPlaceShipAt(row, col, selectedShipLength, isVertical)) {
+                    alert("Cannot place ship here. There are adjacent ships or it's out of bounds!");
+                    return;
+                }
+            
+                // Place the ship on the grid
+                placeShip(row, col, selectedShipLength, isVertical);
+            
+                // Find the first ship element (representing the placed ship) that's not already colored and update it
+                const shipElements = document.getElementsByClassName("ship" + selectedShipLength);
+                for (const element of shipElements) {
+                    if (element.style.backgroundColor != "rgb(76, 175, 80)") {
+                        element.style.backgroundColor = "rgb(76, 175, 80)";
+                        break; 
+                    }
+                }
+            }
+            
+            // Function to find the length of the currently selected ship
+            function findSelectedShipLength() {
                 for (let ShipLength = 1; ShipLength < 5; ShipLength++) {
                     const currentShip = "Ship" + ShipLength + "Select";
                     const isChecked = Array.from(document.getElementsByClassName(currentShip)).some(element => element.checked);
-            
                     if (isChecked) {
-                        selectedShipLength = ShipLength;
-                        break;
+                        return ShipLength;
                     }
                 }
+                return null; 
+            }
             
-                if (!selectedShipLength) {
-                    return;
-                }
-
-                // Check for the maximum number of ships placed
-                let counterOfTheSameShipLengthPlaced = 0;
-                for (const element of document.getElementsByClassName("ship" + selectedShipLength)) {
-                    if (element.style.backgroundColor == "rgb(76, 175, 80)") {
-                        counterOfTheSameShipLengthPlaced++;
+            // Function to check if the maximum number of ships of a given length has been placed
+            function hasReachedMaxShips(shipLength) {
+                const placedShips = Array.from(document.getElementsByClassName("ship" + shipLength))
+                    .filter(element => element.style.backgroundColor == "rgb(76, 175, 80)")
+                    .length;
+                return placedShips >= (5 - shipLength); 
+            }
+            
+            // Function to check if a ship can be placed at a given location
+            function canPlaceShipAt(row, col, shipLength, isVertical) {
+                for (let i = 0; i < shipLength; i++) {
+                    const currentRow = isVertical ? row + i : row;
+                    const currentCol = isVertical ? col : col + i;
+            
+                    // Check if the placement is within the grid bounds
+                    if (currentRow < 0 || currentRow >= 10 || currentCol < 0 || currentCol >= 10) {
+                        return false; 
                     }
-                }
-                if (counterOfTheSameShipLengthPlaced == (5 - selectedShipLength)) {
-                    // Uncheck the currently selected radio button
-                    const currentShipRadios = document.getElementsByClassName("Ship"+selectedShipLength+"Select");
-                    for (const radio of currentShipRadios) {
-                        if (radio.checked) {
-                            radio.checked = false;
-                            break; // No need to continue checking once we uncheck one
-                        }
-                    }
-                
-                    // Check the radio button for the next smaller ship length (if available)
-                    if (selectedShipLength > 1) {
-                        const nextShipRadios = document.getElementsByClassName("Ship"+(selectedShipLength-1)+"Select");
-                        nextShipRadios[0].checked = true; // Check the first radio button in the group
-                    }
-                    return;
-                }
-        
-                // Check for adjacent occupied cells
-                let canPlaceShip = true;
-                for (let i = 0; i < selectedShipLength; i++) {
-                    const currentRow = orientationVertical ? row + i : row;
-                    const currentCol = orientationVertical ? col : col + i;
-        
-                    // Check current cell and adjacent cells
+            
+                    // Check the current cell and its adjacent cells for existing ships
                     for (let r = currentRow - 1; r <= currentRow + 1; r++) {
                         for (let c = currentCol - 1; c <= currentCol + 1; c++) {
-                            if (r >= 0 && r < 10 && c >= 0 && c < 10) { // Check if within bounds
+                            if (r >= 0 && r < 10 && c >= 0 && c < 10) {
                                 const adjacentGridId = "grid" + r + c;
                                 if (document.getElementById(adjacentGridId).dataset.hiddenValue == 1) {
-                                    canPlaceShip = false;
-                                    break; 
+                                    return false; 
                                 }
                             }
                         }
-                        if (!canPlaceShip) break; 
-                    }
-                    if (!canPlaceShip) break;
-                }
-        
-                if (!canPlaceShip) {
-                    alert("Cannot place ship here. There are adjacent ships!");
-                    return;
-                }
-
-                const newColor = "rgb(76, 175, 80)";
-    
-                for (let i = 0; i < selectedShipLength; i++) {
-                    //If vertical => grid+(row+i)+col
-                    const currentGridId = orientationVertical ? "grid" + (row + i) + col : "grid" + row + (col + i);
-    
-                    document.getElementById(currentGridId).dataset.hiddenValue = 1;
-                    document.getElementById(currentGridId).style.backgroundColor = newColor;
-                    
-                }
-    
-                // Find the first ship element that's not already colored
-                const shipElements = document.getElementsByClassName("ship" + selectedShipLength);
-                for (const element of shipElements) {
-                    if (element.style.backgroundColor != newColor) {
-                        element.style.backgroundColor = newColor;
-                        break;
                     }
                 }
-                } 
+                return true; 
+            }
+            
+            // Function to place a ship on the grid
+            function placeShip(row, col, shipLength, isVertical) {
+                const newColor = "rgb(76, 175, 80)"; 
+            
+                for (let i = 0; i < shipLength; i++) {
+                    const currentGridId = isVertical ? "grid" + (row + i) + col : "grid" + row + (col + i);
+            
+                    const currentCell = document.getElementById(currentGridId);
+                    if (currentCell) { 
+                        currentCell.dataset.hiddenValue = 1; 
+                        currentCell.style.backgroundColor = newColor;
+                    }
+                }
+            }
+            
+            // New function to select the next available ship checkbox
+            function selectNextAvailableShip() {
+                for (let shipLength = 4; shipLength > 0; shipLength--) {
+                    if (!hasReachedMaxShips(shipLength)) {
+                        // Get all checkboxes for this ship length
+                        const checkboxes = document.getElementsByClassName("Ship" + shipLength + "Select");
+            
+                        // Check the first one that's not already checked
+                        for (const checkbox of checkboxes) {
+                            if (!checkbox.checked) {
+                                checkbox.checked = true;
+                                break;
+                            }
+                        }
+                        break; // Exit the outer loop once a checkbox is selected
+                    }
+                }
+            }
             
             
         </script>
