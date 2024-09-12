@@ -40,6 +40,8 @@
         <button type="submit" onclick="getBoard()">Send it!</button>
 
         <script>
+            document.getElementsByClassName("Ship4Select")[0].checked=true;
+
             function updateGameCell(gameId, row, col, value) {
                 // Create the data object to send
                 const data = {
@@ -100,7 +102,6 @@
                 }
                 return cookieValue;
             }
-            
             function updateHiddenFieldsAndSubmit(row, col) {
                 const gridId = "grid" + row + col;
                 const orientationVertical = document.getElementById("vertical").checked;
@@ -117,81 +118,82 @@
                     }
                 }
             
-                if (selectedShipLength) {
-                    // Check for the maximum number of ships placed
-                    let counterOfTheSameShipLengthPlaced = 0;
-                    for (const element of document.getElementsByClassName("ship" + selectedShipLength)) {
-                        if (element.style.backgroundColor == "rgb(76, 175, 80)") {
-                            counterOfTheSameShipLengthPlaced++;
+                if (!selectedShipLength) {
+                    return;
+                }
+
+                // Check for the maximum number of ships placed
+                let counterOfTheSameShipLengthPlaced = 0;
+                for (const element of document.getElementsByClassName("ship" + selectedShipLength)) {
+                    if (element.style.backgroundColor == "rgb(76, 175, 80)") {
+                        counterOfTheSameShipLengthPlaced++;
+                    }
+                }
+                if (counterOfTheSameShipLengthPlaced == (5 - selectedShipLength)) {
+                    // Uncheck the currently selected radio button
+                    const currentShipRadios = document.getElementsByClassName("Ship"+selectedShipLength+"Select");
+                    for (const radio of currentShipRadios) {
+                        if (radio.checked) {
+                            radio.checked = false;
+                            break; // No need to continue checking once we uncheck one
                         }
                     }
-                    if (counterOfTheSameShipLengthPlaced == (5 - selectedShipLength)) {
-                        // Uncheck the currently selected radio button
-                        const currentShipRadios = document.getElementsByClassName("Ship"+selectedShipLength+"Select");
-                        for (const radio of currentShipRadios) {
-                            if (radio.checked) {
-                                radio.checked = false;
-                                break; // No need to continue checking once we uncheck one
-                            }
-                        }
-                    
-                        // Check the radio button for the next smaller ship length (if available)
-                        if (selectedShipLength > 1) {
-                            const nextShipRadios = document.getElementsByClassName("Ship"+(selectedShipLength-1)+"Select");
-                            nextShipRadios[0].checked = true; // Check the first radio button in the group
-                        }
-                        return; 
+                
+                    // Check the radio button for the next smaller ship length (if available)
+                    if (selectedShipLength > 1) {
+                        const nextShipRadios = document.getElementsByClassName("Ship"+(selectedShipLength-1)+"Select");
+                        nextShipRadios[0].checked = true; // Check the first radio button in the group
                     }
-            
-                    // Check for adjacent occupied cells
-                    let canPlaceShip = true;
-                    for (let i = 0; i < selectedShipLength; i++) {
-                        const currentRow = orientationVertical ? row + i : row;
-                        const currentCol = orientationVertical ? col : col + i;
-            
-                        // Check current cell and adjacent cells
-                        for (let r = currentRow - 1; r <= currentRow + 1; r++) {
-                            for (let c = currentCol - 1; c <= currentCol + 1; c++) {
-                                if (r >= 0 && r < 10 && c >= 0 && c < 10) { // Check if within bounds
-                                    const adjacentGridId = "grid" + r + c;
-                                    if (document.getElementById(adjacentGridId).dataset.hiddenValue == 1) {
-                                        canPlaceShip = false;
-                                        break; 
-                                    }
+                    return;
+                }
+        
+                // Check for adjacent occupied cells
+                let canPlaceShip = true;
+                for (let i = 0; i < selectedShipLength; i++) {
+                    const currentRow = orientationVertical ? row + i : row;
+                    const currentCol = orientationVertical ? col : col + i;
+        
+                    // Check current cell and adjacent cells
+                    for (let r = currentRow - 1; r <= currentRow + 1; r++) {
+                        for (let c = currentCol - 1; c <= currentCol + 1; c++) {
+                            if (r >= 0 && r < 10 && c >= 0 && c < 10) { // Check if within bounds
+                                const adjacentGridId = "grid" + r + c;
+                                if (document.getElementById(adjacentGridId).dataset.hiddenValue == 1) {
+                                    canPlaceShip = false;
+                                    break; 
                                 }
                             }
-                            if (!canPlaceShip) break; 
                         }
-                        if (!canPlaceShip) break;
+                        if (!canPlaceShip) break; 
                     }
-            
-                    if (canPlaceShip) {
-                        const newColor = "rgb(76, 175, 80)";
-            
-                        for (let i = 0; i < selectedShipLength; i++) {
-                            //If vertical => grid+(row+i)+col
-                            const currentGridId = orientationVertical ? "grid" + (row + i) + col : "grid" + row + (col + i);
-            
-                            document.getElementById(currentGridId).dataset.hiddenValue = 1;
-                            document.getElementById(currentGridId).style.backgroundColor = newColor;
-                            
-                        }
-            
-                        // Find the first ship element that's not already colored
-                        const shipElements = document.getElementsByClassName("ship" + selectedShipLength);
-                        for (const element of shipElements) {
-                            if (element.style.backgroundColor != newColor) {
-                                element.style.backgroundColor = newColor;
-                                break;
-                            }
-                        }
+                    if (!canPlaceShip) break;
+                }
+        
+                if (!canPlaceShip) {
+                    alert("Cannot place ship here. There are adjacent ships!");
+                    return;
+                }
 
-                    } else {
-                        // Handle the case where the ship can't be placed (e.g., show an alert)
-                        alert("Cannot place ship here. There are adjacent ships!");
+                const newColor = "rgb(76, 175, 80)";
+    
+                for (let i = 0; i < selectedShipLength; i++) {
+                    //If vertical => grid+(row+i)+col
+                    const currentGridId = orientationVertical ? "grid" + (row + i) + col : "grid" + row + (col + i);
+    
+                    document.getElementById(currentGridId).dataset.hiddenValue = 1;
+                    document.getElementById(currentGridId).style.backgroundColor = newColor;
+                    
+                }
+    
+                // Find the first ship element that's not already colored
+                const shipElements = document.getElementsByClassName("ship" + selectedShipLength);
+                for (const element of shipElements) {
+                    if (element.style.backgroundColor != newColor) {
+                        element.style.backgroundColor = newColor;
+                        break;
                     }
+                }
                 } 
-            }
             
             
         </script>

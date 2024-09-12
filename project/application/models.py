@@ -2,6 +2,7 @@ import json
 from django.db import models
 
 class Game(models.Model):
+    game_id = models.TextField()
     board = models.TextField()
     player_1 = models.ForeignKey('auth.User', related_name='player_1', on_delete=models.CASCADE)
     player_2 = models.ForeignKey('auth.User', related_name='player_2', on_delete=models.CASCADE)
