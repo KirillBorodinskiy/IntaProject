@@ -20,16 +20,19 @@ def create_game(request):
             # Установите текущего игрока, если необходимо
             game.current_turn = game.player_1  # Пример установки начального хода
             game.save()
-            return redirect('create-board.html', game_id=game.id)  # Перенаправление на страницу с деталями игры
+            return redirect('create_board', game_id=game.id)  # Pass game_id as a keyword argument
     else:
         form = GameCreationForm()
     return render(request, 'create-game.html', {'form': form})
 
-def create_board(request):
+
+def create_board(request,game_id):
     # Create an empty 10x10 board as a dictionary
     board = {row_index: {col_index: '' for col_index in range(10)} for row_index in range(10)}
 
     ShipList = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1]
+
+    request.session['game_id'] = game_id
 
     return render(request, 'create-board.html', {'board': board, 'ShipList': ShipList})
 
@@ -51,19 +54,6 @@ def board_view(request, game_id):
     game = get_object_or_404(Game, id=game_id)
     board = game.get_board()
     return render(request, 'board.html', {'board': board})
-
-def place_ship(request):
-    if request.method == 'POST':
-        row = int(request.POST.get('row'))
-        col = int(request.POST.get('col'))
-        orientation = request.POST.get('orientation')
-
-
-
-        # Возвращаем ответ (можно перенаправить на ту же страницу или другую)
-        updated_board = 1
-
-        return render(request, 'create-board.html', {'board': updated_board})  # Или другую страницу, если нужно
 
 def register(request):
     if request.method == 'POST':
@@ -93,28 +83,28 @@ def add_ship_position(request):
     
     return JsonResponse({'status': 'fail', 'error': 'Invalid request method.'}, status=405)
 
-def update_game_cell(request):
-  if request.method != 'POST':
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+def save_board(request):
+    if request.method == 'POST':
+        board_data = request.POST.get('boardData')
+        try:
+            board_array = json.loads(board_data)
 
-  try:
-    game_id = int(request.POST.get('game_id'))
-    row = int(request.POST.get('row'))
-    col = int(request.POST.get('col'))
-    value = int(request.POST.get('value'))  # Update value type based on your model
-  except (ValueError, TypeError):
-    return JsonResponse({'status': 'error', 'message': 'Invalid data format'})
+            # Assuming you have a Game instance associated with this board
+            game_id = request.session.get('game_id')  # Or however you're storing the game_id
+            game = get_object_or_404(Game, id=game_id)
 
-  try:
-    game_board = Game.objects.get(pk=game_id)
-  except Game.DoesNotExist:
-    return JsonResponse({'status': 'error', 'message': 'Game board not found'})
+            # Clear existing ship positions for this game (if needed)
+            game.shipposition_set.all().delete() 
 
-  # Update the board state based on value (replace with your logic)
-  if value == 1:
-    game_board.board[row][col] = 1  # Set cell to occupied
-  else:
-    game_board.board[row][col] = 0  # Set cell to empty
+            # Save the new ship positions
+            for row_index, row in enumerate(board_array):
+                for col_index, cell_value in enumerate(row):
+                    if cell_value == 1:  # Assuming 1 represents a ship
+                        ShipPosition.objects.create(game=game, row=row_index, column=col_index)
 
-  game_board.save()
-  return JsonResponse({'status': 'success', 'message': 'Cell updated successfully'})
+            return HttpResponse("Board saved successfully!")
+
+        except json.JSONDecodeError:
+            return HttpResponse("Invalid board data", status=400)
+    else:
+        return HttpResponse("Invalid request method")

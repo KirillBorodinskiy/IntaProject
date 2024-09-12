@@ -37,44 +37,28 @@
                 {% endfor %}
             {% endfor %}
         </div>
-        <button type="submit" onclick="getBoard()">Send it!</button>
+        
+        <form id="Form" method="POST" action="/save-board/"> {% csrf_token %}
+            <input type="hidden" id="boardData" name="boardData" value="">
+            <button type="submit" onclick="getBoardAndSubmit()">Send it!</button> 
+        </form>
 
         <script>
             selectNextAvailableShip();
 
-            function updateGameCell(gameId, row, col, value) {
-                // Create the data object to send
-                const data = {
-                    game_id: gameId,
-                    row: row,
-                    col: col,
-                    value: value
-                };
+            function getBoardAndSubmit() {
+                const board = getBoard(); // Get the board array using your existing function
             
-                // Get the CSRF token (if needed)
-                const csrftoken = getCookie('csrftoken');
+                // Serialize the board array
+                const boardData = JSON.stringify(board);
             
-                // Send a POST request to the Django backend
-                fetch('/update-cell/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': csrftoken // Only if CSRF protection is enabled
-                    },
-                    body: JSON.stringify(data)
-                })
-                .then(response => response.json())
-                .then(result => {
-                    if (result.status === 'success') {
-                        console.log('Cell updated successfully');
-                    } else {
-                        console.error('Error updating cell:', result.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Request failed:', error);
-                });
+                // Set the value of the hidden input to the board
+                const hiddenInput = document.getElementById('boardData').value = boardData;
+            
+                // Submit the form
+                document.getElementById('Form').submit();
             }
+
             function getBoard(){
                 const board = [];
 
@@ -88,25 +72,7 @@
                 return board;
             }
 
-            function getCookie(name) {
-                let cookieValue = null;
-                if (document.cookie && document.cookie !== '') {
-                    const cookies = document.cookie.split(';');
-                    for (let i = 0; i < cookies.length; i++) {
-                        const cookie = cookies[i].trim();
-                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                            break;
-                        }
-                    }
-                }
-                return cookieValue;
-            }
-
-            
             function updateHiddenFieldsAndSubmit(row, col) {
-                // Get the ID of the grid cell being clicked
-                const gridId = "grid" + row + col;
             
                 // Check if the orientation is vertical
                 const isVertical = document.getElementById("vertical").checked;
@@ -114,9 +80,8 @@
                 // Find the length of the currently selected ship
                 const selectedShipLength = findSelectedShipLength();
             
-                // If no ship is selected, alert the user and return
+                // If no ship is selected, select the first one
                 if (!selectedShipLength) {
-                    document.getElementsByClassName("Ship4Select")[0].checked=true;
                     return;
                 }
             

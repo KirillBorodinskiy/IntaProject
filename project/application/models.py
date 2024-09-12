@@ -2,8 +2,7 @@ import json
 from django.db import models
 
 class Game(models.Model):
-    game_id = models.TextField()
-    board = models.TextField()
+    board = models.TextField()  
     player_1 = models.ForeignKey('auth.User', related_name='player_1', on_delete=models.CASCADE)
     player_2 = models.ForeignKey('auth.User', related_name='player_2', on_delete=models.CASCADE)
     current_turn = models.ForeignKey('auth.User', related_name='current_turn', on_delete=models.CASCADE)
@@ -28,8 +27,9 @@ class Game(models.Model):
         return json.loads(self.board)
     
 class ShipPosition(models.Model):
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, default=1)
     row = models.IntegerField()
     column = models.IntegerField()
 
     def __str__(self):
-        return f"Row: {self.row}, Column: {self.column}"
+        return f"Game: {self.game_id}, Row: {self.row}, Column: {self.column}"
