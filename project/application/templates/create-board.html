@@ -37,6 +37,7 @@
                 {% endfor %}
             {% endfor %}
         </div>
+        <button type="submit" onclick="getBoard()">Send it!</button>
 
         <script>
             function updateGameCell(gameId, row, col, value) {
@@ -72,8 +73,19 @@
                     console.error('Request failed:', error);
                 });
             }
-            
-            // Function to get CSRF token from cookies (if needed for your setup)
+            function getBoard(){
+                const board = [];
+
+                for (let row_index = 0; row_index < 10; row_index++) {
+                  const row = [];
+                  for (let col_index = 0; col_index < 10; col_index++) {
+                    row.push(document.getElementById("grid"+row_index+col_index).dataset.hiddenValue); 
+                  }
+                  board.push(row);
+                }
+                return board;
+            }
+
             function getCookie(name) {
                 let cookieValue = null;
                 if (document.cookie && document.cookie !== '') {
@@ -114,8 +126,21 @@
                         }
                     }
                     if (counterOfTheSameShipLengthPlaced == (5 - selectedShipLength)) {
-                        alert("No ships left!")
-                        return; // Maximum ships of this length already placed
+                        // Uncheck the currently selected radio button
+                        const currentShipRadios = document.getElementsByClassName("Ship"+selectedShipLength+"Select");
+                        for (const radio of currentShipRadios) {
+                            if (radio.checked) {
+                                radio.checked = false;
+                                break; // No need to continue checking once we uncheck one
+                            }
+                        }
+                    
+                        // Check the radio button for the next smaller ship length (if available)
+                        if (selectedShipLength > 1) {
+                            const nextShipRadios = document.getElementsByClassName("Ship"+(selectedShipLength-1)+"Select");
+                            nextShipRadios[0].checked = true; // Check the first radio button in the group
+                        }
+                        return; 
                     }
             
                     // Check for adjacent occupied cells
@@ -149,7 +174,7 @@
             
                             document.getElementById(currentGridId).dataset.hiddenValue = 1;
                             document.getElementById(currentGridId).style.backgroundColor = newColor;
-
+                            
                         }
             
                         // Find the first ship element that's not already colored
@@ -160,6 +185,7 @@
                                 break;
                             }
                         }
+
                     } else {
                         // Handle the case where the ship can't be placed (e.g., show an alert)
                         alert("Cannot place ship here. There are adjacent ships!");
