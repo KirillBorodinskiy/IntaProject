@@ -23,14 +23,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("", auth_views.LoginView.as_view(), name='index'),
 
-    path('<int:game_id>/', views.board_view, name='board'),
-    path('create-board/<int:game_id>/', views.create_board, name='create_board'),
-    path('create-game/create-board.html/',views.create_board,name='create_board'),
-    path('create-game/', views.create_game, name='create_game'),
-    path('save-board/', views.save_board, name='save_board'),
-
+    path('game/<int:game_id>/', views.board_view, name='game_view'),
+    path('create-board/', views.create_board, name='create_board'),
+    path('save-board/', views.save_board, name='save-board'),
     path('connect-tables/', views.connect_tables, name='connect_tables'),
-
+    
     path("register/",views.register,name='register'),
     path('login/', auth_views.LoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),

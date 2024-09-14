@@ -7,59 +7,34 @@
     <link rel="stylesheet" type="text/css" href="{% static "application/styles.css" %}">
 </head>
 <body>
-    <div class="game-boards ">
+    <div class="game-boards container">
 
-        <div class="game-board container">
-            <h2>Your Board</h2> {## Add a heading for clarity ##}
-            <table class="board-grid">
-                <thead>
-                    <tr>
-                        <th></th> 
-                        {% for letter in rl|slice:"1:" %} {## Start from the second element to get letters ##}
-                            <th>{{ letter.1 }}</th> 
-                        {% endfor %}
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for row in board %}
-                        <tr>
-                            <th>{{ forloop.counter }}</th> 
-                            {% for cell in row %}
-                                <td>
-                                    <div class="block {% if cell == 'S' %}ship{% endif %}"></div> 
-                                </td>
-                            {% endfor %}
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+        {% for player, board in boards.items %}
+        <div class="game-board">
+            <h2>{{ player|capfirst }}'s Board</h2> 
+            <div class="board-grid">
+                <div class="cell"></div> 
+                {% for letter in rl|slice:"1:" %}
+                    <div class="cell label">{{ letter.1 }}</div> 
+                {% endfor %}
 
-        <div class="game-board container">
-            <h2>Opponent's Board</h2> {## Add a heading for the opponent's board ##}
-            <table class="board-grid">
-                <thead>
-                    <tr>
-                        <th></th> 
-                        {% for letter in rl|slice:"1:" %} {## Start from the second element to get letters ##}
-                            <th>{{ letter.1 }}</th> 
-                        {% endfor %}
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for i in range|slice:"1:" %} {## Iterate to create 10 rows ##}
-                        <tr>
-                            <th>{{ i }}</th> 
-                            {% for j in range|slice:"1:" %} {## Iterate to create 10 columns ##}
-                                <td>
-                                    <div class="block"></div> {## Initially empty for the opponent's board ##}
-                                </td>
-                            {% endfor %}
-                        </tr>
+                {% for row_index, row in board.items %} 
+                    <div class="cell label">{{ row_index|add:1 }}</div> 
+                    {% for col_index, cell in row.items %} 
+                        <div id="grid{{row_index}}{{col_index}}" data-hidden-value="0" 
+                             class="block block1 
+                             {% if player == 'player_1' %} 
+                                 {% if cell %} occupied {% endif %}
+                             {% endif %}" 
+                             data-row="{{ row_index }}" data-col="{{ col_index }}"
+                             onclick="{% if player == 'player_1' %}updateHiddenFieldsAndSubmit({{ row_index }}, {{ col_index }}){% endif %}">
+                            {% if cell %} {{ cell }} {% endif %} 
+                        </div>
                     {% endfor %}
-                </tbody>
-            </table>
+                {% endfor %} {## Removed the misplaced </tr> tag ##}
+            </div>
         </div>
+        {% endfor %}
 
     </div>
 </body>

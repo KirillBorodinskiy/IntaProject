@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Game
+from .models import *
 
 class GameCreationForm(forms.ModelForm):
     player_1 = forms.ModelChoiceField(queryset=User.objects.all(), required=True)
@@ -11,8 +11,8 @@ class GameCreationForm(forms.ModelForm):
         fields = ['player_1', 'player_2']
 
 class ConnectTablesForm(forms.Form):
-    player_1_board = forms.ModelChoiceField(queryset=Game.objects.all(), label='Select Player 1\'s Board')
-    player_2_board = forms.ModelChoiceField(queryset=Game.objects.all(), label='Select Player 2\'s Board')
+    player_1_board = forms.ModelChoiceField(queryset=Board.objects.all(), label='Select Player 1\'s Board')
+    player_2_board = forms.ModelChoiceField(queryset=Board.objects.all(), label='Select Player 2\'s Board')
 
     def clean(self):
         cleaned_data = super().clean()
