@@ -35,6 +35,12 @@ def connect_tables(request):
     return render(request, 'connect-tables.html', {'form': form})
 
 def board_view(request, game_id):
+    r = range(11)
+    n = [0,1,2,3,4,5,6,7,8,9,10]
+    l = ['Z','A','B','C','D','E','F','G','H','I','J']
+    rn = list(zip(r, n))
+    rl = list(zip(r, l))
+
     game = get_object_or_404(Game, id=game_id)
 
     # Get the boards for both players
@@ -52,7 +58,7 @@ def board_view(request, game_id):
                 for row_index, row in enumerate(board_2_data)}
 
     # Pass the boards to the template
-    return render(request, 'board.html', {'boards': {'player_1': board_1, 'player_2': board_2}})
+    return render(request, 'board.html', {'boards': {'player_1': board_1, 'player_2': board_2}, 'rn': rn, 'rl': rl})
 
 def index(request):
     return HttpResponse("haha")
@@ -129,6 +135,6 @@ def save_board(request):
         board.ship_positions = board_data
         board.save()
 
-        return render(request, 'save-board.html')
+        return render(request, 'save-board.html', {'board': board})
     else:
         return HttpResponse("Invalid request method")

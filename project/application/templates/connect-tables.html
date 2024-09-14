@@ -1,5 +1,16 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Application</title>
+    <link rel="stylesheet" type="text/css" href="{% static "application/styles.css" %}">
+</head>
+<div class="container">
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Connect Tables</button>
 </form>
+</div>
+</html>

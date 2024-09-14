@@ -6,8 +6,21 @@
         <title>Board saved succesfully</title>
         <link rel="stylesheet" type="text/css" href="{% static 'application/styles.css' %}">
     </head>
+    <style>
+        h1 {
+            color: #333;
+            margin: center;
+            font-size: 2em;
+        }
+    </style>
 <body>
     <div class = "container">
-        <h1> Your board saved under 
+        <h1>Board Saved Successfully!</h1>
+        <p class="board-info">Your board ID is: <strong>{{ board.id }}</strong></p>
+        <form id="Form" method="POST" action="/connect-tables/"> {% csrf_token %}
+            <input type="hidden" id="boardData" name="boardData" value="">
+            <button type="submit" onclick="">Choose your opponent!</button> 
+        </form>
+    </div>
 </body>
 </html>
