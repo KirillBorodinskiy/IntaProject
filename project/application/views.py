@@ -5,9 +5,36 @@ from .models import Game
 from .forms import GameCreationForm
 from django.http import JsonResponse
 import json
+from .forms import ConnectTablesForm
 
 
-# Create your views here.
+def connect_tables(request):
+    if request.method == 'POST':
+        form = ConnectTablesForm(request.POST)
+        if form.is_valid():
+            player_1_board = form.cleaned_data['player_1_board']
+            player_2_board = form.cleaned_data['player_2_board']
+
+            # Create a new Game instance and associate the boards
+            game = Game.objects.create(
+                player_1=player_1_board.player_1,  # Assuming player_1 is associated with the board
+                player_2=player_2_board.player_1,  # Assuming player_1 is associated with the board
+                current_turn=player_1_board.player_1,  # You might want to choose the starting player differently
+            )
+
+            # You might want to update the original boards to indicate they're now part of a game
+            player_1_board.in_game = True
+            player_1_board.save()
+            player_2_board.in_game = True
+            player_2_board.save()
+
+            return render('game_view', game_id=game.id)
+    else:
+        form = ConnectTablesForm()
+
+    return render(request, 'connect-tables.html', {'form': form})
+
+
 def index(request):
     return HttpResponse("haha")
 
@@ -86,27 +113,31 @@ def add_ship_position(request):
             return JsonResponse({'status': 'fail', 'error': 'Invalid JSON format.'}, status=400)
     
     return JsonResponse({'status': 'fail', 'error': 'Invalid request method.'}, status=405)
-
 def save_board(request):
     if request.method == 'POST':
         board_data = request.POST.get('boardData')
         try:
-            board_array = json.loads(board_data)
+            board_array = json.loads(board_data) 
 
-            # Assuming you have a Game instance associated with this board
-            game_id = request.session.get('game_id')  # Or however you're storing the game_id
+            # Get the Game instance 
+            game_id = request.session.get('game_id')
             game = get_object_or_404(Game, id=game_id)
 
-            # Clear existing ship positions for this game (if needed)
-            game.shipposition_set.all().delete() 
+            # Reshape the 1D array into a 10x10 2D array
+            board_2d = [board_array[i:i+10] for i in range(0, len(board_array), 10)]
 
-            # Save the new ship positions
-            for row_index, row in enumerate(board_array):
+            # Extract ship positions from the 2D board_array
+            ship_positions = []
+            for row_index, row in enumerate(board_2d):
                 for col_index, cell_value in enumerate(row):
-                    if cell_value == 1:  # Assuming 1 represents a ship
-                        ShipPosition.objects.create(game=game, row=row_index, column=col_index)
+                    if cell_value == 1: 
+                        ship_positions.append({'row': row_index, 'column': col_index})
 
-            return HttpResponse("Board saved successfully!")
+            # Update the ship_positions field in the Game instance
+            game.ship_positions = ship_positions
+            game.save()
+
+            return HttpResponse("Board saved successfully!<br>Your id is "+str(game_id))
 
         except json.JSONDecodeError:
             return HttpResponse("Invalid board data", status=400)
