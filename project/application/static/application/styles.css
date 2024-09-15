@@ -131,14 +131,15 @@ p a:hover {
     width:2em;
 }
 #Ships {
-    overflow-y: scroll;
-    height: 10em;
+    overflow-y: auto;
+    height: 10em; 
     display: grid;
-    grid-template-columns: repeat(2, 1fr);  
-    justify-items: center;
-    align-items: start;
-    padding-right: 10px;
+    justify-items: center; 
+    grid-template-columns: repeat(3, 2fr);
     box-sizing: border-box;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
 }
 
 .board-grid {

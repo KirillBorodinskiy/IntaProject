@@ -107,11 +107,11 @@ def update_board(request):
         try:
             data = json.loads(request.body)
             row = data.get('row')
-            column = data.get('column')
-            value = data.get('value')  # Get the new value for the cell
+            column = data.get('col')
+            at = data.get('at')
             game_id = data.get('game_id')  # Get the game ID
 
-            if row is not None and column is not None and value is not None and game_id is not None:
+            if row is not None and column is not None and game_id is not None and at is not None:
                 try:
                     game = Game.objects.get(id=game_id)
                 except Game.DoesNotExist:
@@ -131,7 +131,7 @@ def update_board(request):
 
                 return JsonResponse({'status': 'success', 'board': board})
             else:
-                return JsonResponse({'status': 'fail', 'error': 'Row, column, value, and game_id are required.'}, status=400)
+                return JsonResponse({'status': 'fail', 'error': str(row)+' '+ str(column)+' and '+str(game_id)+' are required.'}, status=400)
         except json.JSONDecodeError:
             return JsonResponse({'status': 'fail', 'error': 'Invalid JSON format.'}, status=400)
 

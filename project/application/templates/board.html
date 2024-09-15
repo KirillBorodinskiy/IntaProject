@@ -33,7 +33,7 @@
                             {% endif %}" 
                             data-row="{{ row_index }}" data-col="{{ col_index }}"
                             {% if user.username != player %}
-                                onclick="shoot({{ row_index }},{{ col_index }})" 
+                                onclick="shoot({{player}},{{ row_index }},{{ col_index }})" 
                             {% endif %}>
                             
                         </div>
@@ -46,15 +46,15 @@
     </div>
 </body>
 <script>
-    function shoot(row,col){
+    function shoot(at,row,col){
     
         // Create the data object to send
         const data = {
             row: row,
             col: col,
-            game_id: "{{game_id}}"
+            game_id: {{game_id}},
+            opponent: at
         };
-    
         // Get the CSRF token
         const csrftoken ='{{csrf_token}}';
     
