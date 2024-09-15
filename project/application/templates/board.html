@@ -13,22 +13,24 @@
         <div class="game-board">
             <h2>{{ player|capfirst }}'s Board</h2> 
             <div class="board-grid">
-                <div class="cell"></div>  {# Empty corner cell #}
+                <div class="block cell"></div>  {# Empty corner cell #}
                 {% for letter in rl|slice:"1:" %}
-                    <div class="cell label">{{ letter.1 }}</div> 
+                    <div class="block cell label">{{ letter.1 }}</div> 
                 {% endfor %}
 
                 {% for row_index, row in board.items %} 
-                    <div class="cell label">{{ row_index|add:1 }}</div> {## Row label placed first ##}
+                    <div class="block cell label">{{ row_index|add:1 }}</div> {## Row label placed first ##}
                     {% for col_index, cell in row.items %} 
-                        <div id="grid{{row_index}}{{col_index}}" data-hidden-value="0" 
-                             class="block block1 
-                             {% if player == 'player_1' %} 
-                                 {% if cell == '1' %} occupied {% endif %}
-                             {% endif %}" 
-                             data-row="{{ row_index }}" data-col="{{ col_index }}"
-                             onclick="{% if player == 'player_2' %}updateHiddenFieldsAndSubmit({{ row_index }}, {{ col_index }}){% endif %}">
-                            {% if cell %} {{ cell }} {% endif %} 
+                        <div id="grid{{row_index}}{{col_index}}" data-hidden-value="{{cell}}" 
+                            class="block block1 
+                            {% if player == 'player_1' %} 
+                                {% if cell == '1' %} occupied {% endif %}
+                            {% endif %}
+                            {% if player == 'player_2' %}
+                                block_enemy
+                            {% endif %}" 
+                            data-row="{{ row_index }}" data-col="{{ col_index }}"
+                            {% if player == 'player_2' %}onclick="updateHiddenFieldsAndSubmit({{ row_index }}, {{ col_index }}){% endif %}">
                         </div>
                     {% endfor %}
                 {% endfor %} 

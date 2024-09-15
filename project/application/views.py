@@ -60,10 +60,15 @@ def board_view(request, game_id):
     # Pass the boards to the template
     return render(request, 'board.html', {'boards': {'player_1': board_1, 'player_2': board_2}, 'rn': rn, 'rl': rl})
 
-def index(request):
-    return HttpResponse("haha")
+
 
 def create_board(request):
+    r = range(11)
+    n = [0,1,2,3,4,5,6,7,8,9,10]
+    l = ['Z','A','B','C','D','E','F','G','H','I','J']
+    rn = list(zip(r, n))
+    rl = list(zip(r, l))
+
     # Associate the board with the current user
     player = request.user 
 
@@ -77,21 +82,7 @@ def create_board(request):
     # Store the board_id in the session 
     request.session['board_id'] = board.id
 
-    return render(request, 'create-board.html', {'board': LocalBoard, 'ShipList': ShipList})
-
-def board(request):
-    r = range(11)
-    n = [0,1,2,3,4,5,6,7,8,9,10]
-    l = ['Z','A','B','C','D','E','F','G','H','I','J']
-    rn = list(zip(r, n))
-    rl = list(zip(r, l))
-    context = {
-        'rn': rn,
-        'rl': rl,
-        'zi': list(zip(r,n,l)),
-        'range':r,
-    }
-    return render(request, 'application/board.html',context)
+    return render(request, 'create-board.html', {'board': LocalBoard, 'ShipList': ShipList, 'rn': rn, 'rl': rl})
 
 
 def register(request):

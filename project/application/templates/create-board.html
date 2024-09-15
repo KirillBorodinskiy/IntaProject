@@ -26,16 +26,29 @@
                 <label for="horizontal">Horizontal</label>
             </div>
         </div>
-        <div class="grid grid1">
-            {% for row_index, row in board.items %} 
-                {% for col_index, cell in row.items %}
-                    <div id ="grid{{row_index}}{{col_index}}" data-hidden-value="0" class="block block1" data-row="{{ row_index }}" data-col="{{ col_index }}" 
-                         onclick="updateHiddenFieldsAndSubmit({{ row_index }}, {{ col_index }})"
-                         {% if cell %} occupied {% endif %}>
-                        {% if cell %} {{ cell }} {% endif %} 
-                    </div>
-                {% endfor %}
-            {% endfor %}
+        <div class="game-boards">
+            <div class="game-board">
+                <div class="board-grid">
+                    <div class="cell"></div> 
+                    {% for letter in rl|slice:"1:" %}
+                        <div class="cell label">{{ letter.1 }}</div> 
+                    {% endfor %}
+    
+                    {% for row_index, row in board.items %} 
+                        <div class="cell label">{{ row_index|add:1 }}</div> 
+                        {% for col_index, cell in row.items %} 
+                            <div id="grid{{row_index}}{{col_index}}" data-hidden-value="0" 
+                                 class="block block1 
+                                 {% if cell == '1' %} occupied {% endif %}"  {# Check if cell is '1' (ship) #}
+                                 data-row="{{ row_index }}" data-col="{{ col_index }}"
+                                 onclick="updateHiddenFieldsAndSubmit({{ row_index }}, {{ col_index }})">
+                                {% if cell %} {{ cell }} {% endif %} 
+                            </div>
+                        {% endfor %}
+                    {% endfor %} 
+                </div>
+            </div>
+    
         </div>
         
         <form id="Form" method="POST" action="/save-board/"> {% csrf_token %}

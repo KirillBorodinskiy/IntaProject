@@ -6,21 +6,7 @@ body{
     grid-template: repeat(11, 1fr) / repeat(11, 1fr); 
     margin-top: 5em;
 }
-.grid1{
-    float:left;
-    margin-left: 5em;
-}
-.grid2{
-    float:right;
-    margin-right: 5em;
-}
-.block {
-    border-radius:3px;
-    aspect-ratio: 1;
-    width:3em;
-    color: white;
-    margin: 2px;
-}
+
 .block1{
     background-color: #85c0d3;
 }
@@ -44,37 +30,7 @@ body{
 .naming_block2{
     background-color: #d24f4f;
 }
-@media (max-width: 768px) {
-    .grid{
-        grid-template: repeat(11,1fr);
-        /* grid-gap:2px; */
-    }
-    .grid1, .grid2{
-        float: none;
-        margin-left: 0;
-        margin-right: 0;
-    }
-}
-.grid {
-    display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    gap: 1px;
-    margin:auto;
-}
-.occupied {
-    background-color: gray; /* Цвет для занятых ячеек */
-    background-color: darkblue;
 
-}
-.block {
-    width: 2em;
-    height: 2em;
-    background-color: rgb(173, 216, 230);
-    border: 1px solid #ddd;
-    text-align: center;
-    line-height: 30px;
-}
-/* static/css/styles.css */
 body {
     font-family: Arial, sans-serif;
     background-color: rgb(244, 244, 249);
@@ -171,20 +127,6 @@ p a:hover {
     overflow-y: scroll;
     height:20em;
 }
-.grid {
-    display: grid;
-    grid-template-columns: repeat(10, 1fr); /* 10 equal columns */
-    border-collapse: collapse; /* Remove gaps between cells */
-    margin: 20px; /* Center the grid */
-}
-.game-boards {
-    display: flex; /* Arrange boards side-by-side */
-    gap: 20px; 
-}
-
-.game-board {
-    border: 1px solid #ccc;
-}
 
 .board-grid {
     border-collapse: collapse;
@@ -197,15 +139,12 @@ p a:hover {
     text-align: center;
 }
 
-.block {
-    width: 20px; /* Adjust as needed */
-    height: 20px;
-    background-color: #eee; /* Or any default color */
-}
+
 .block {
     width: 30px;
     height: 30px;
     border: 1px solid #ccc; /* Light gray border */
+    background-color: #eee; /* Or any default color */
     text-align: center;
     cursor: pointer; /* Indicate clickable */
 }
@@ -233,17 +172,16 @@ p a:hover {
     text-align: center;
     line-height: 30px; /* Vertically center text */
 }
-/* Basic styling for the game boards container */
+
 .game-boards {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
-    gap: 20px;
 }
 
-/* Styling for each individual game board */
 .game-board {
     border: 1px solid #ccc;
+    margin:20px;
 }
 
 /* Core CSS Grid layout for the board */
@@ -259,15 +197,10 @@ p a:hover {
     height: 30px;
     background-color: #eee; 
     border: 1px solid #ccc;
-
+    color:black;
 }
 
 /* Styling for label cells (first row and first column) */
 .cell.label {
     font-weight: bold;
-}
-
-/* Styling for cells containing ships */
-.cell.ship {
-    background-color: gray;
 }
