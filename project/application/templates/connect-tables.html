@@ -9,7 +9,12 @@
 <div class="container">
 <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
+    {% for field in form %}
+    <div class="form-group">
+        {{ field.label_tag }}
+        {{ field }}
+    </div>
+    {% endfor %}
     <button type="submit">Connect Tables</button>
 </form>
 </div>

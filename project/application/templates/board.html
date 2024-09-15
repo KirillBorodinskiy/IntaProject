@@ -5,13 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Application</title>
     <link rel="stylesheet" type="text/css" href="{% static "application/styles.css" %}">
+    
 </head>
 <body>
     <div class="game-boards container">
-
-        {% for player, board in boards.items %}
+    {% for player, board in boards.items %}
         <div class="game-board">
-            <h2>{{ player|capfirst }}'s Board</h2> 
+            <h2 style="{% if user.username|lower == player|lower %} color:rgb(0, 123, 255) {% else %} color:rgb(255 30 0)  {% endif %}">
+                
+                {{ player|capfirst }}'s Board
+            </h2>
             <div class="board-grid">
                 <div class="block cell"></div>  {# Empty corner cell #}
                 {% for letter in rl|slice:"1:" %}
@@ -23,26 +26,61 @@
                     {% for col_index, cell in row.items %} 
                         <div id="grid{{row_index}}{{col_index}}" data-hidden-value="{{cell}}" 
                             class="block block1 
-                            {% if player == 'player_1' %} 
+                            {% if user.username|lower == player|lower %} 
                                 {% if cell == '1' %} occupied {% endif %}
-                            {% endif %}
-                            {% if player == 'player_2' %}
-                                block_enemy
+                            {% else %}
+                                block_enemy cursor
                             {% endif %}" 
                             data-row="{{ row_index }}" data-col="{{ col_index }}"
-                            {% if player == 'player_2' %}onclick="updateHiddenFieldsAndSubmit({{ row_index }}, {{ col_index }}){% endif %}">
+                            {% if user.username != player %}
+                                onclick="shoot({{ row_index }},{{ col_index }})" 
+                            {% endif %}>
+                            
                         </div>
                     {% endfor %}
                 {% endfor %} 
             </div>
         </div>
-        {% endfor %}
+    {% endfor %}
 
     </div>
 </body>
-</html>
 <script>
-function updateHiddenFieldsAndSubmit(row,col){
+    function shoot(row,col){
     
-}
+        // Create the data object to send
+        const data = {
+            row: row,
+            col: col,
+            game_id: "{{game_id}}"
+        };
+    
+        // Get the CSRF token
+        const csrftoken ='{{csrf_token}}';
+    
+        // Send a POST request to the Django backend
+        fetch('/update-board/', {  // Adjust the URL if your view has a different name or path
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken // Include the CSRF token if you have CSRF protection enabled
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === 'success') {
+                // Handle the successful shot (e.g., update the board display, check for game over)
+                console.log('Shot successful:', result);
+                // You'll likely need to update the opponent's board display based on the 'result' data
+            } else {
+                // Handle errors (e.g., display an error message)
+                console.error('Error shooting:', result.message);
+            }
+        })
+        .catch(error => {
+            console.error('Request failed:', error);
+        });
+    }
 </script
+</html>

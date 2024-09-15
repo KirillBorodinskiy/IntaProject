@@ -2,10 +2,10 @@ from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse
 from django.shortcuts import render, redirect,get_object_or_404
 from .models import *
-from .forms import GameCreationForm
 from django.http import JsonResponse
 import json
 from .forms import ConnectTablesForm
+from django.contrib.auth.decorators import login_required
 
 def connect_tables(request):
     if request.method == 'POST':
@@ -34,7 +34,11 @@ def connect_tables(request):
 
     return render(request, 'connect-tables.html', {'form': form})
 
+@login_required
 def board_view(request, game_id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
     r = range(11)
     n = [0,1,2,3,4,5,6,7,8,9,10]
     l = ['Z','A','B','C','D','E','F','G','H','I','J']
@@ -47,6 +51,9 @@ def board_view(request, game_id):
     player_1_board = game.player_1_board
     player_2_board = game.player_2_board
 
+    player_1 = game.player_1
+    player_2 = game.player_2
+
     # Access ship positions directly from the TextField, converting to a list if needed
     board_1_data = eval(player_1_board.ship_positions) if player_1_board.ship_positions else []
     board_2_data = eval(player_2_board.ship_positions) if player_2_board.ship_positions else []
@@ -58,7 +65,7 @@ def board_view(request, game_id):
                 for row_index, row in enumerate(board_2_data)}
 
     # Pass the boards to the template
-    return render(request, 'board.html', {'boards': {'player_1': board_1, 'player_2': board_2}, 'rn': rn, 'rl': rl})
+    return render(request, 'board.html', {'boards': {player_1: board_1, player_2: board_2}, 'rn': rn, 'rl': rl,'game_id':game_id})
 
 
 
@@ -95,22 +102,39 @@ def register(request):
         form = UserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
 
-def add_ship_position(request):
+def update_board(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
             row = data.get('row')
             column = data.get('column')
+            value = data.get('value')  # Get the new value for the cell
+            game_id = data.get('game_id')  # Get the game ID
 
-            if row is not None and column is not None:
-                # Save the ship position to the database
-                ship_position = ShipPosition.objects.create(row=row, column=column)
-                return JsonResponse({'status': 'success', 'id': ship_position.id})
+            if row is not None and column is not None and value is not None and game_id is not None:
+                try:
+                    game = Game.objects.get(id=game_id)
+                except Game.DoesNotExist:
+                    return JsonResponse({'status': 'fail', 'error': 'Game not found.'}, status=404)
+
+                # Update the cell in the board
+                board = json.loads(game.board)
+                toCheck = board[row][column]
+                
+                if(toCheck==1):
+                    board[row][column]=2
+                else:
+                    board[row][column]=3
+
+                game.board = json.dumps(board)
+                game.save()
+
+                return JsonResponse({'status': 'success', 'board': board})
             else:
-                return JsonResponse({'status': 'fail', 'error': 'Row and column are required.'}, status=400)
+                return JsonResponse({'status': 'fail', 'error': 'Row, column, value, and game_id are required.'}, status=400)
         except json.JSONDecodeError:
             return JsonResponse({'status': 'fail', 'error': 'Invalid JSON format.'}, status=400)
-    
+
     return JsonResponse({'status': 'fail', 'error': 'Invalid request method.'}, status=405)
 
 

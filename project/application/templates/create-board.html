@@ -38,7 +38,7 @@
                         <div class="cell label">{{ row_index|add:1 }}</div> 
                         {% for col_index, cell in row.items %} 
                             <div id="grid{{row_index}}{{col_index}}" data-hidden-value="0" 
-                                 class="block block1 
+                                 class="block cursor
                                  {% if cell == '1' %} occupied {% endif %}"  {# Check if cell is '1' (ship) #}
                                  data-row="{{ row_index }}" data-col="{{ col_index }}"
                                  onclick="updateHiddenFieldsAndSubmit({{ row_index }}, {{ col_index }})">
@@ -53,15 +53,17 @@
         
         <form id="Form" method="POST" action="/save-board/"> {% csrf_token %}
             <input type="hidden" id="boardData" name="boardData" value="">
-            <button type="submit" onclick="getBoardAndSubmit()">Send it!</button> 
+            <button id="refreshButton" type="button" style="background-color:orange;margin-bottom:10px" onclick="resetBoard()">Reset board</button>
+            <button id="submitter" disabled type="submit" style="background-color:rgb(99,102,106)" onclick="getBoardAndSubmit()">Send it!</button> 
         </form>
 
         <script>
             selectNextAvailableShip();
 
             function getBoardAndSubmit() {
-                const board = getBoard(); // Get the board array using your existing function
-            
+
+                const board = getBoard();
+
                 // Serialize the board array
                 const boardData = JSON.stringify(board);
             
@@ -73,6 +75,7 @@
             }
 
             function getBoard(){
+
                 const board = [];
 
                 for (let row_index = 0; row_index < 10; row_index++) {
@@ -135,6 +138,46 @@
                 }
                 return null; 
             }
+
+            function resetBoard() {
+            // Loop through all grid cells and reset their hidden value and styles
+            for (let row_index = 0; row_index < 10; row_index++) {
+                for (let col_index = 0; col_index < 10; col_index++) {
+                    const currentCell = document.getElementById("grid" + row_index + col_index);
+                    if (currentCell) {
+                        currentCell.dataset.hiddenValue = 0; // Reset hidden value to 0 (empty)
+                        currentCell.style.backgroundColor = ""; // Reset the background color
+                    }
+                }
+            }
+
+            // Reset the ship placement tracker
+            for (let shipLength = 1; shipLength <= 4; shipLength++) {
+                shipPlacementTracker[shipLength] = 0; // Reset the count of placed ships
+            }
+
+            // Uncheck all ship radio buttons
+            const shipRadios = document.querySelectorAll('input[name="shipLength"]');
+            shipRadios.forEach(radio => {
+                radio.checked = false; // Uncheck all ship options
+            });
+
+            // Reset the ships in the selection area to their default color
+            for (let shipLength = 1; shipLength <= 4; shipLength++) {
+                const shipElements = document.getElementsByClassName("ship" + shipLength);
+                for (const element of shipElements) {
+                    element.style.backgroundColor = ""; // Reset background color of ship elements
+                }
+            }
+
+            // Disable the "Send it!" button again since no ships are placed
+            const submitButton = document.getElementById("submitter");
+            submitButton.disabled = true;
+            submitButton.style.backgroundColor = "rgb(99,102,106)"; // Change button color back to gray
+
+            // Optionally, reset the first ship option to be selected again
+            selectNextAvailableShip();
+        }
             
             // Function to check if the maximum number of ships of a given length has been placed
             function hasReachedMaxShips(shipLength) {
@@ -169,23 +212,68 @@
                 }
                 return true; 
             }
-            
-            // Function to place a ship on the grid
+
+            // Global object to track how many ships of each type have been placed
+            const shipPlacementTracker = {
+                1: 0, // 1-unit ships
+                2: 0, // 2-unit ships
+                3: 0, // 3-unit ships
+                4: 0  // 4-unit ships
+            };
+
+            // Update the placeShip function to count placed ships and check if all ships are placed
             function placeShip(row, col, shipLength, isVertical) {
                 const newColor = "rgb(76, 175, 80)"; 
-            
+
                 for (let i = 0; i < shipLength; i++) {
                     const currentGridId = isVertical ? "grid" + (row + i) + col : "grid" + row + (col + i);
-            
+
                     const currentCell = document.getElementById(currentGridId);
                     if (currentCell) { 
                         currentCell.dataset.hiddenValue = 1; 
                         currentCell.style.backgroundColor = newColor;
                     }
                 }
+
+                // Update the count of placed ships for the current ship length
+                shipPlacementTracker[shipLength]++;
+
+                // After placing a ship, check if all ships are placed
+                checkAllShipsPlaced();
+            }
+
+            // Function to check if all ships are placed and enable the submit button
+            function checkAllShipsPlaced() {
+                // Required number of ships per length (for example: 1 ship of length 4, 2 of length 3, etc.)
+                const requiredShips = {
+                    1: 4, // Four 1-unit ships
+                    2: 3, // Three 2-unit ships
+                    3: 2, // Two 3-unit ships
+                    4: 1  // One 4-unit ship
+                };
+
+                let allShipsPlaced = true;
+                
+                // Check if the placed ships match the required numbers
+                for (let shipLength = 1; shipLength <= 4; shipLength++) {
+                    if (shipPlacementTracker[shipLength] < requiredShips[shipLength]) {
+                        allShipsPlaced = false;
+                        break;
+                    }
+                }
+
+                // Enable or disable the submit button based on whether all ships are placed
+                const submitButton = document.getElementById("submitter");
+                if (allShipsPlaced) {
+                    submitButton.disabled = false;
+                    submitButton.style.backgroundColor = " rgb(0, 123, 255)"; // Enable button with a green color
+                } else {
+                    submitButton.disabled = true;
+                    submitButton.style.backgroundColor = "rgb(99,102,106)"; // Keep button disabled and gray
+                }
             }
             
-            // New function to select the next available ship checkbox
+            // Function to select the next available ship checkbox
             function selectNextAvailableShip() {
                 for (let shipLength = 4; shipLength > 0; shipLength--) {
                     if (!hasReachedMaxShips(shipLength)) {

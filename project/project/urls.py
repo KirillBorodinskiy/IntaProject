@@ -27,6 +27,7 @@ urlpatterns = [
     path('create-board/', views.create_board, name='create_board'),
     path('save-board/', views.save_board, name='save-board'),
     path('connect-tables/', views.connect_tables, name='connect_tables'),
+    path('update-board/', views.update_board, name='update_board'),
     
     path("register/",views.register,name='register'),
     path('login/', auth_views.LoginView.as_view(), name='login'),
