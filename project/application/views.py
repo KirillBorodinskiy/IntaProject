@@ -57,7 +57,7 @@ def board_view(request, game_id):
     # Access ship positions directly from the TextField, converting to a list if needed
     board_1_data = eval(player_1_board.ship_positions) if player_1_board.ship_positions else []
     board_2_data = eval(player_2_board.ship_positions) if player_2_board.ship_positions else []
-
+        
     # Construct the board dictionaries in the desired format
     board_1 = {row_index: {col_index: cell_value for col_index, cell_value in enumerate(row)} 
                 for row_index, row in enumerate(board_1_data)}
@@ -65,7 +65,7 @@ def board_view(request, game_id):
                 for row_index, row in enumerate(board_2_data)}
 
     # Pass the boards to the template
-    return render(request, 'board.html', {'boards': {player_1: board_1, player_2: board_2}, 'rn': rn, 'rl': rl,'game_id':game_id})
+    return render(request, 'board.html', {'boards': {player_1: board_1, player_2: board_2}, 'rn': rn, 'rl': rl,'game_id':game_id, 'current_turn': game.current_turn.username})
 
 
 
@@ -108,35 +108,70 @@ def update_board(request):
             data = json.loads(request.body)
             row = data.get('row')
             column = data.get('col')
-            at = data.get('at')
-            game_id = data.get('game_id')  # Get the game ID
+            game_id = data.get('game_id')
 
-            if row is not None and column is not None and game_id is not None and at is not None:
+            if row is not None and column is not None and game_id is not None:
                 try:
                     game = Game.objects.get(id=game_id)
                 except Game.DoesNotExist:
                     return JsonResponse({'status': 'fail', 'error': 'Game not found.'}, status=404)
 
-                # Update the cell in the board
-                board = json.loads(game.board)
-                toCheck = board[row][column]
-                
-                if(toCheck==1):
-                    board[row][column]=2
+                # Determine the opponent's board
+                opponent_board = None
+                if game.current_turn == request.user:
+                    if (request.user==game.player_1):
+                        opponent_board=game.player_2_board
+                    else:
+                        opponent_board=game.player_1_board
+
+                if opponent_board is None:
+                    return JsonResponse({'status': 'fail', 'error': 'Game not found.'}, status=404)
+                # Update the cell in the opponent's board data
+                opponent_board_data = eval(opponent_board.ship_positions)
+                if 0 <= row < 10 and 0 <= column < 10:  # Check if row and column are within bounds
+                    if opponent_board_data[row][column] == '1':
+                        opponent_board_data[row][column] = '2'  # Hit
+                        
+                    elif(opponent_board_data[row][column] == '0'):
+                        opponent_board_data[row][column] = '3'  # Miss
+                        if (request.user==game.player_1):
+                            game.current_turn=game.player_2
+                        else:
+                            game.current_turn=game.player_1
+                        game.save()
+
+                    # Save the updated board data back to the Board instance
+                    opponent_board.ship_positions = repr(opponent_board_data)
+                    opponent_board.save()
+
+                    return JsonResponse({'status': 'success', 'hit at': str(row)+' '+str(column)})
                 else:
-                    board[row][column]=3
+                    return JsonResponse({'status': 'fail', 'error': 'Invalid row or column.'}, status=400)
 
-                game.board = json.dumps(board)
-                game.save()
-
-                return JsonResponse({'status': 'success', 'board': board})
             else:
-                return JsonResponse({'status': 'fail', 'error': str(row)+' '+ str(column)+' and '+str(game_id)+' are required.'}, status=400)
+                return JsonResponse({'status': 'fail', 'error': ''+str(row)+', '+str(column)+', and '+str(game_id)+' are required.'}, status=400)
         except json.JSONDecodeError:
             return JsonResponse({'status': 'fail', 'error': 'Invalid JSON format.'}, status=400)
 
     return JsonResponse({'status': 'fail', 'error': 'Invalid request method.'}, status=405)
 
+def check_for_updates(request,game_id):
+    game = get_object_or_404(Game, id=game_id)
+
+    # Check if it's the current user's turn
+    if game.current_turn == request.user:
+        return JsonResponse({'update': False})  # No update needed if it's their own turn
+
+    # Check if the opponent's board has been updated since the last check
+    last_update_time = request.session.get('last_update_time') 
+    if last_update_time is None:
+        last_update_time = game.updated_at
+
+    if game.updated_at > last_update_time: 
+        request.session['last_update_time'] = game.updated_at
+        return JsonResponse({'update': True})
+    else:
+        return JsonResponse({'update': False})
 
 def save_board(request):
     if request.method == 'POST':

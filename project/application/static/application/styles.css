@@ -7,6 +7,17 @@ body{
     margin-top: 5em;
 }
 
+.game-info {
+    width: 100%;
+    text-align: center;
+    background-color: #f8f9fa; /* Light gray background for better visibility */
+    padding: 10px;
+    border-bottom: 2px solid #ccc; /* Add a slight border under it */
+    margin-bottom: 20px; /* Space between the current turn info and the game boards */
+    font-size: 18px;
+    font-weight: bold;
+}
+
 .naming_block{
     display: flex;
     font-size:20px;
@@ -223,4 +234,12 @@ p a:hover {
     margin:auto;
     margin-bottom:20px;
     font-size:20px;
+}
+
+.hit {
+    background-color: rgb(255, 0, 0);
+}
+
+.missed {
+    background-color: rgb(146, 212, 236);
 }

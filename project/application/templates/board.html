@@ -9,12 +9,21 @@
 </head>
 <body>
     <div class="game-boards container">
+        <div>
+            <h3></h3>
+        </div>
     {% for player, board in boards.items %}
         <div class="game-board">
             <h2 style="{% if user.username|lower == player|lower %} color:rgb(0, 123, 255) {% else %} color:rgb(255 30 0)  {% endif %}">
-                
                 {{ player|capfirst }}'s Board
             </h2>
+
+            {% if current_turn|lower == player|lower %}
+                <p style="color: green;">It's {{ player|capfirst }}'s turn</p>
+            {% else %}
+                <p style="color: gray;">Waiting for {{ player|capfirst }}'s turn</p>
+            {% endif %}
+
             <div class="board-grid">
                 <div class="block cell"></div>  {# Empty corner cell #}
                 {% for letter in rl|slice:"1:" %}
@@ -27,13 +36,17 @@
                         <div id="grid{{row_index}}{{col_index}}" data-hidden-value="{{cell}}" 
                             class="block block1 
                             {% if user.username|lower == player|lower %} 
-                                {% if cell == '1' %} occupied {% endif %}
+                                {% if cell == '1' %} occupied
+                                {% elif cell == '2' %} hit
+                                {% elif cell == '3' %} missed {% endif %}
                             {% else %}
+                            {% if cell == '2' %} hit
+                            {% elif cell == '3' %} missed {% endif %}
                                 block_enemy cursor
                             {% endif %}" 
                             data-row="{{ row_index }}" data-col="{{ col_index }}"
                             {% if user.username != player %}
-                                onclick="shoot({{player}},{{ row_index }},{{ col_index }})" 
+                                onclick="shoot({{ row_index }},{{ col_index }})" 
                             {% endif %}>
                             
                         </div>
@@ -46,14 +59,13 @@
     </div>
 </body>
 <script>
-    function shoot(at,row,col){
+    function shoot(row,col){
     
         // Create the data object to send
         const data = {
             row: row,
             col: col,
             game_id: {{game_id}},
-            opponent: at
         };
         // Get the CSRF token
         const csrftoken ='{{csrf_token}}';
@@ -77,10 +89,35 @@
                 // Handle errors (e.g., display an error message)
                 console.error('Error shooting:', result.message);
             }
+            location.reload();
         })
         .catch(error => {
             console.error('Request failed:', error);
         });
+
     }
-</script
+    function pollForUpdates() {
+        const csrftoken ='{{csrf_token}}';
+        const gameId = '{{game_id}}'; // Get the gameId from your template context
+        fetch(`/check_for_updates/${gameId}/`,{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken // Include the CSRF token if you have CSRF protection enabled
+            }
+        })
+            .then(response => response.json())
+            .then(result => {
+                if (result.update) {
+                    location.reload(); // Reload the page if there's an update
+                }
+            })
+            .catch(error => {
+                console.error('Polling failed:', error);
+            });
+    }
+    
+    // Poll every 5 seconds (adjust the interval as needed)
+    setInterval(pollForUpdates, 5000); 
+</script>
 </html>

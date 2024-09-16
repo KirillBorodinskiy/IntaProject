@@ -28,9 +28,11 @@ urlpatterns = [
     path('save-board/', views.save_board, name='save-board'),
     path('connect-tables/', views.connect_tables, name='connect_tables'),
     path('update-board/', views.update_board, name='update_board'),
+    path('check_for_updates/<int:game_id>/', views.check_for_updates, name='check_for_updates'),
     
     path("register/",views.register,name='register'),
     path('login/', auth_views.LoginView.as_view(), name='login'),
+    path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 ]
 
