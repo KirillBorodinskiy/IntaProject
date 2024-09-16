@@ -201,17 +201,55 @@ def save_board(request):
         return HttpResponse("Invalid request method")
 
 @login_required
-def board_list(request):
-    # Get the current user
+def games_view(request):
+    # Get the logged-in user
     user = request.user
-    
-    # Get all boards associated with the current user
-    boards = Board.objects.filter(player=user)
-    
-    return render(request, 'board-list.html', {'boards': boards})
+
+    # Query games where the user is either player_1 or player_2
+    games_as_player_1 = Game.objects.filter(player_1=user)
+    games_as_player_2 = Game.objects.filter(player_2=user)
+
+    # Combine both queries into a single list of games
+    games = games_as_player_1 | games_as_player_2
+
+    # Pass the games to the template
+    return render(request, 'games_list.html', {'games': games})
 
 @login_required
-def view_board(request, board_id):
-    board = get_object_or_404(Board, id=board_id, player=request.user)
-    # Assuming you want to render the board in some specific format
-    return render(request, 'view_board.html', {'board': board})
+def board_view(request, game_id):
+    # Fetch the game by ID
+    game = get_object_or_404(Game, id=game_id)
+
+    # Get the boards for both players
+    player_1_board = game.player_1_board
+    player_2_board = game.player_2_board
+
+    # Determine the logged-in player
+    current_player = request.user
+
+    # Check if the logged-in player is part of this game
+    if current_player not in [game.player_1, game.player_2]:
+        return HttpResponse("You are not part of this game.")
+
+    # Access the board data for both players
+    board_1_data = eval(player_1_board.ship_positions) if player_1_board.ship_positions else []
+    board_2_data = eval(player_2_board.ship_positions) if player_2_board.ship_positions else []
+
+    # Prepare the board data for display
+    board_1 = {row_index: {col_index: cell_value for col_index, cell_value in enumerate(row)}
+               for row_index, row in enumerate(board_1_data)}
+    board_2 = {row_index: {col_index: cell_value for col_index, cell_value in enumerate(row)}
+               for row_index, row in enumerate(board_2_data)}
+
+    # Check whose turn it is and pass this information to the template
+    is_current_turn = game.current_turn == current_player
+
+    return render(request, 'board.html', {
+        'game': game,
+        'boards': {
+            game.player_1: board_1,
+            game.player_2: board_2,
+        },
+        'current_player': current_player,
+        'is_current_turn': is_current_turn,
+    })

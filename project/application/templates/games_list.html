@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your games</title>
+    <link rel="stylesheet" href="{% static 'application/styles.css' %}">
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="navbar-menu">
+            <li class="navbar-item">
+                <a href="{% url 'create_board' %}">Create a new board</a>
+                <a href="{% url 'connect_tables'%}">Choose an opponent</a>
+                <a href="{% url 'games_list'%}">My games</a>
+                <a href="{% url 'logout' %}">Logout</a>
+            </li>
+        </ul>
+    </nav>
+    <div class="container">
+    <h1>Your Games</h1>
+
+    <ul>
+        {% for game in games %}
+            <li>
+                <strong>Game {{ forloop.counter }}:</strong> 
+                vs 
+                {% if game.player_1 == user %}
+                    {{ game.player_2.username }} 
+                {% else %}
+                    {{ game.player_1.username }}
+                {% endif %}
+                <br>
+                Game created on: {{ game.created_at|date:"F j, Y, g:i a" }}
+                <br>
+                Status: 
+                {% if game.current_turn == user %}
+                    Your turn
+                {% else %}
+                    {{ game.current_turn.username }}'s turn
+                {% endif %}
+                <br>
+                <a href = "{% url 'game_view' %}">View Game</a>
+            </li>
+        {% empty %}
+            <p>You have not participated in any games yet.</p>
+        {% endfor %}
+    </ul>
+</div>
+</body>
+</html>

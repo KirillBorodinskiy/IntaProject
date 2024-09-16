@@ -13,7 +13,7 @@
             <li class="navbar-item">
                 <a href="{% url 'create_board' %}">Create a new board</a>
                 <a href="{% url 'connect_tables'%}">Choose an opponent</a>
-                <a href="{% url 'board_list'%}">My boards</a>
+                <a href="{% url 'games_list'%}">My games</a>
                 <a href="{% url 'logout' %}">Logout</a>
             </li>
         </ul>
@@ -22,7 +22,7 @@
         <h2>Welcome, {{ user.username }}!</h2>
         <p>To make you new board choose "Create a new board" on the navigation menu
         <br>If you already have your board click "Choose an opponent"
-        <br>If you are willing to see your boards with ships, click "My boards"
+        <br>If you are willing to see games you participated in, click "My games"
         </p>
     </div>
 </body>

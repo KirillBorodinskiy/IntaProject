@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Application</title>
     <link rel="stylesheet" type="text/css" href="{% static "application/styles.css" %}">
-    
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
 </head>
 <body>
     <nav class="navbar">
@@ -13,12 +13,13 @@
             <li class="navbar-item">
                 <a href="{% url 'create_board' %}">Create a new board</a>
                 <a href="{% url 'connect_tables'%}">Choose an opponent</a>
-                <a href="{% url 'board_list'%}">My boards</a>
+                <a href="{% url 'games_list'%}">My games</a>
                 <a href="{% url 'logout' %}">Logout</a>
             </li>
         </ul>
     </nav>
     <div class="game-boards container">
+    
     {% for player, board in boards.items %}
         <div class="game-board">
             <h2 style="{% if user.username|lower == player|lower %} color:rgb(0, 123, 255) {% else %} color:rgb(255 30 0)  {% endif %}">
@@ -26,19 +27,17 @@
             </h2>
 
             {% if current_turn|lower == player|lower %}
-                <p style="color: green;">It's {{ player|capfirst }}'s turn</p>
+                <p style="color: green;">Make a move, {{ current_turn|capfirst }}!</p>
             {% else %}
-                <p style="color: gray;">Waiting for {{ player|capfirst }}'s turn</p>
+                <p style="color: gray;">Waiting for {{ current_turn|capfirst }} to make a move</p>
             {% endif %}
-
             <div class="board-grid">
                 <div class="block cell"></div>  {# Empty corner cell #}
                 {% for letter in rl|slice:"1:" %}
                     <div class="block cell label">{{ letter.1 }}</div> 
                 {% endfor %}
-
                 {% for row_index, row in board.items %} 
-                    <div class="block cell label">{{ row_index|add:1 }}</div> {## Row label placed first ##}
+                    <div class="block cell label">{{ row_index|add:1 }}</div>
                     {% for col_index, cell in row.items %} 
                         <div id="grid{{row_index}}{{col_index}}" data-hidden-value="{{cell}}" 
                             class="block block1 
@@ -61,8 +60,8 @@
                 {% endfor %} 
             </div>
         </div>
+        {% if has_ships %} <div class="container">GG</div> {% endif %}
     {% endfor %}
-
     </div>
 </body>
 <script>
@@ -104,7 +103,7 @@
 
     }
     function pollForUpdates() {
-        const csrftoken ='{{csrf_token}}';
+        /*const csrftoken ='{{csrf_token}}';
         const gameId = '{{game_id}}'; // Get the gameId from your template context
         fetch(`/check_for_updates/${gameId}/`,{
             method: 'POST',
@@ -121,7 +120,8 @@
             })
             .catch(error => {
                 console.error('Polling failed:', error);
-            });
+            });*/
+            location.reload();
     }
     
     // Poll every 5 seconds (adjust the interval as needed)
