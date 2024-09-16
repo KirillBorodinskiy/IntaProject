@@ -14,6 +14,16 @@
         }
     </style>
 <body>
+    <nav class="navbar">
+        <ul class="navbar-menu">
+            <li class="navbar-item">
+                <a href="{% url 'create_board' %}">Create a new board</a>
+                <a href="{% url 'connect_tables'%}">Choose an opponent</a>
+                <a href="{% url 'board_list'%}">My boards</a>
+                <a href="{% url 'logout' %}">Logout</a>
+            </li>
+        </ul>
+    </nav>
     <div class = "container">
         <h1>Board Saved Successfully!</h1>
         <p class="board-info">Your board ID is: <strong>{{ board.id }}</strong></p>

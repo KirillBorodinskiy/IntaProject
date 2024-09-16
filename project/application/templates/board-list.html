@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your games</title>
+    <link rel="stylesheet" href="{% static 'application/styles.css' %}">
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="navbar-menu">
+            <li class="navbar-item">
+                <a href="{% url 'create_board' %}">Create a new board</a>
+                <a href="{% url 'connect_tables'%}">Choose an opponent</a>
+                <a href="{% url 'board_list'%}">My g</a>
+                <a href="{% url 'logout' %}">Logout</a>
+            </li>
+        </ul>
+    </nav>
+    <div class="container centerDiv">
+        <h1>Your Boards</h1>
+        <p>Below is a list of your boards. Click on a board to view it.</p>
+
+        <div class="board-list">
+            {% for board in boards %}
+                <div class="board-item">
+                    <h2>Board ID: {{ board.id }}</h2>
+                    <a href="{% url 'view_board' board.id %}" class="btn">View Board</a>
+                </div>
+            {% empty %}
+                <p>You have no boards.</p>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

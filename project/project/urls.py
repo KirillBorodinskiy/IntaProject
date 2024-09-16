@@ -29,10 +29,13 @@ urlpatterns = [
     path('connect-tables/', views.connect_tables, name='connect_tables'),
     path('update-board/', views.update_board, name='update_board'),
     path('check_for_updates/<int:game_id>/', views.check_for_updates, name='check_for_updates'),
+    path('start-page/', views.start_page , name='start_page'),
+    path('board-list/', views.board_list, name='board_list'),
+    path('board-list/<int:board_id>/', views.view_board, name='view_board'),
     
     path("register/",views.register,name='register'),
     path('login/', auth_views.LoginView.as_view(), name='login'),
     path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('logout/', auth_views.LoginView.as_view(), name='logout'),
 ]
 

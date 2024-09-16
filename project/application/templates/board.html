@@ -8,10 +8,17 @@
     
 </head>
 <body>
+    <nav class="navbar">
+        <ul class="navbar-menu">
+            <li class="navbar-item">
+                <a href="{% url 'create_board' %}">Create a new board</a>
+                <a href="{% url 'connect_tables'%}">Choose an opponent</a>
+                <a href="{% url 'board_list'%}">My boards</a>
+                <a href="{% url 'logout' %}">Logout</a>
+            </li>
+        </ul>
+    </nav>
     <div class="game-boards container">
-        <div>
-            <h3></h3>
-        </div>
     {% for player, board in boards.items %}
         <div class="game-board">
             <h2 style="{% if user.username|lower == player|lower %} color:rgb(0, 123, 255) {% else %} color:rgb(255 30 0)  {% endif %}">

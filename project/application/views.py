@@ -6,6 +6,8 @@ from django.http import JsonResponse
 import json
 from .forms import ConnectTablesForm
 from django.contrib.auth.decorators import login_required
+from datetime import datetime
+from django.utils import timezone
 
 def connect_tables(request):
     if request.method == 'POST':
@@ -20,7 +22,8 @@ def connect_tables(request):
                 player_2=player_2_board.player,
                 current_turn=player_1_board.player,  
                 player_1_board=player_1_board,
-                player_2_board=player_2_board
+                player_2_board=player_2_board,
+                updated_at=datetime.now()
             )
 
             player_1_board.in_game = True 
@@ -54,6 +57,9 @@ def board_view(request, game_id):
     player_1 = game.player_1
     player_2 = game.player_2
 
+    if 'last_update_time' not in request.session:
+        request.session['last_update_time'] = game.updated_at.strftime('%Y-%m-%d %H:%M:%S')
+
     # Access ship positions directly from the TextField, converting to a list if needed
     board_1_data = eval(player_1_board.ship_positions) if player_1_board.ship_positions else []
     board_2_data = eval(player_2_board.ship_positions) if player_2_board.ship_positions else []
@@ -67,7 +73,8 @@ def board_view(request, game_id):
     # Pass the boards to the template
     return render(request, 'board.html', {'boards': {player_1: board_1, player_2: board_2}, 'rn': rn, 'rl': rl,'game_id':game_id, 'current_turn': game.current_turn.username})
 
-
+def start_page(request):
+    return render(request, 'start-page.html')
 
 def create_board(request):
     r = range(11)
@@ -101,6 +108,7 @@ def register(request):
     else:
         form = UserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
+
 
 def update_board(request):
     if request.method == "POST":
@@ -138,6 +146,7 @@ def update_board(request):
                             game.current_turn=game.player_2
                         else:
                             game.current_turn=game.player_1
+                        game.updated_at=datetime.now()
                         game.save()
 
                     # Save the updated board data back to the Board instance
@@ -155,20 +164,22 @@ def update_board(request):
 
     return JsonResponse({'status': 'fail', 'error': 'Invalid request method.'}, status=405)
 
-def check_for_updates(request,game_id):
+def check_for_updates(request, game_id):
     game = get_object_or_404(Game, id=game_id)
 
     # Check if it's the current user's turn
     if game.current_turn == request.user:
-        return JsonResponse({'update': False})  # No update needed if it's their own turn
+        return JsonResponse({'update': False})
 
-    # Check if the opponent's board has been updated since the last check
-    last_update_time = request.session.get('last_update_time') 
-    if last_update_time is None:
+    last_update_time_str = request.session.get('last_update_time')
+    if last_update_time_str is None:
         last_update_time = game.updated_at
+    else:
+        last_update_time = timezone.make_aware(datetime.strptime(last_update_time_str, '%Y-%m-%d %H:%M:%S')) 
 
+    # Check if the game has been updated since the last check
     if game.updated_at > last_update_time: 
-        request.session['last_update_time'] = game.updated_at
+        request.session['last_update_time'] = game.updated_at.strftime('%Y-%m-%d %H:%M:%S')
         return JsonResponse({'update': True})
     else:
         return JsonResponse({'update': False})
@@ -188,3 +199,19 @@ def save_board(request):
         return render(request, 'save-board.html', {'board': board})
     else:
         return HttpResponse("Invalid request method")
+
+@login_required
+def board_list(request):
+    # Get the current user
+    user = request.user
+    
+    # Get all boards associated with the current user
+    boards = Board.objects.filter(player=user)
+    
+    return render(request, 'board-list.html', {'boards': boards})
+
+@login_required
+def view_board(request, board_id):
+    board = get_object_or_404(Board, id=board_id, player=request.user)
+    # Assuming you want to render the board in some specific format
+    return render(request, 'view_board.html', {'board': board})

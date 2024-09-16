@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{% static 'application/styles.css' %}">
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="navbar-menu">
+            <li class="navbar-item">
+                <a href="{% url 'create_board' %}">Create a new board</a>
+                <a href="{% url 'connect_tables'%}">Choose an opponent</a>
+                <a href="{% url 'board_list'%}">My boards</a>
+                <a href="{% url 'logout' %}">Logout</a>
+            </li>
+        </ul>
+    </nav>
+    <div class="container centerDiv">
+        <h2>Welcome, {{ user.username }}!</h2>
+        <p>To make you new board choose "Create a new board" on the navigation menu
+        <br>If you already have your board click "Choose an opponent"
+        <br>If you are willing to see your boards with ships, click "My boards"
+        </p>
+    </div>
+</body>
+</html>

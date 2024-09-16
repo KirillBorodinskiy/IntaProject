@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Board</title>
+    <link rel="stylesheet" href="{% static 'application/styles.css' %}">
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="navbar-menu">
+            <li class="navbar-item">
+                <a href="{% url 'create_board' %}">Create a new board</a>
+                <a href="{% url 'connect_tables'%}">Choose an opponent</a>
+                <a href="{% url 'board_list'%}">My boards</a>
+                <a href="{% url 'logout' %}">Logout</a>
+            </li>
+        </ul>
+    </nav>
+    <div class="container centerDiv">
+        <h1>Board ID: {{ board.id }}</h1>
+        <!-- Display board content here -->
+        <div class="board-grid">
+            <!-- Example: Render the board as a grid -->
+            {% for row in board.grid %}
+                <div class="board-row">
+                    {% for cell in row %}
+                        <div class="board-cell">{{ cell }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="navigation">
+            <a href="{% url 'board_list' %}" class="btn">Back to Your Boards</a>
+        </div>
+    </div>
+</body>
+</html>

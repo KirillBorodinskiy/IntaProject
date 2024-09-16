@@ -7,6 +7,16 @@
     <link rel="stylesheet" type="text/css" href="{% static 'application/styles.css' %}">
 </head>
 <body>
+    <nav class="navbar">
+        <ul class="navbar-menu">
+            <li class="navbar-item">
+                <a href="{% url 'create_board' %}">Create a new board</a>
+                <a href="{% url 'connect_tables'%}">Choose an opponent</a>
+                <a href="{% url 'board_list'%}">My boards</a>
+                <a href="{% url 'logout' %}">Logout</a>
+            </li>
+        </ul>
+    </nav>
     <div class="container">
         <div class="currentShip">
             <div id="Ships">
