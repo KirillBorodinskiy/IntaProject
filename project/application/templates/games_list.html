@@ -20,33 +20,38 @@
     </nav>
     <div class="container">
     <h1>Your Games</h1>
+    <p>Here are games that you participated in.
+    <br>Click "View game" to look at the game you won or to return to ongoing one.
+    </p>
 
-    <ul>
+    <div class="board-list">
         {% for game in games %}
-            <li>
-                <strong>Game {{ forloop.counter }}:</strong> 
-                vs 
-                {% if game.player_1 == user %}
-                    {{ game.player_2.username }} 
-                {% else %}
-                    {{ game.player_1.username }}
-                {% endif %}
-                <br>
-                Game created on: {{ game.created_at|date:"F j, Y, g:i a" }}
-                <br>
-                Status: 
-                {% if game.current_turn == user %}
-                    Your turn
-                {% else %}
-                    {{ game.current_turn.username }}'s turn
-                {% endif %}
-                <br>
-                <a href = "{% url 'game_view' %}">View Game</a>
-            </li>
+            <div class="game-boards game-board">
+                <div style="margin:20px;">
+                    <b>Game {{ game.id }}:</b>
+                    vs 
+                    {% if game.player_1 == user %}
+                        {{ game.player_2.username }} 
+                    {% else %}
+                        {{ game.player_1.username }}
+                    {% endif %}
+                    <br>
+                    <b>Created on:</b> {{ game.created_at|date:"d/m/Y, H:i" }}
+                    <br>
+                    <b>Status: </b>
+                    {% if game.current_turn == user %}
+                        Your turn
+                    {% else %}
+                        {{ game.current_turn.username }}'s turn
+                    {% endif %}
+                    <br>
+                </div>
+                <button type="button" style="margin:20px;"onclick="window.location.href='{% url 'game_view' game_id=game.id %}'">View Game {{ game.id }} </button>
+            </div>
         {% empty %}
             <p>You have not participated in any games yet.</p>
         {% endfor %}
-    </ul>
+    </div>
 </div>
 </body>
 </html>

@@ -63,7 +63,9 @@ def board_view(request, game_id):
     # Access ship positions directly from the TextField, converting to a list if needed
     board_1_data = eval(player_1_board.ship_positions) if player_1_board.ship_positions else []
     board_2_data = eval(player_2_board.ship_positions) if player_2_board.ship_positions else []
-        
+
+    winner = game.winner
+
     # Construct the board dictionaries in the desired format
     board_1 = {row_index: {col_index: cell_value for col_index, cell_value in enumerate(row)} 
                 for row_index, row in enumerate(board_1_data)}
@@ -71,7 +73,7 @@ def board_view(request, game_id):
                 for row_index, row in enumerate(board_2_data)}
 
     # Pass the boards to the template
-    return render(request, 'board.html', {'boards': {player_1: board_1, player_2: board_2}, 'rn': rn, 'rl': rl,'game_id':game_id, 'current_turn': game.current_turn.username})
+    return render(request, 'board.html', {'boards': {player_1: board_1, player_2: board_2}, 'rn': rn, 'rl': rl,'game_id':game_id, 'current_turn': game.current_turn.username,'winner':winner})
 
 def start_page(request):
     return render(request, 'start-page.html')
@@ -123,7 +125,8 @@ def update_board(request):
                     game = Game.objects.get(id=game_id)
                 except Game.DoesNotExist:
                     return JsonResponse({'status': 'fail', 'error': 'Game not found.'}, status=404)
-
+                if(game.winner!=None):
+                    return JsonResponse({'status': 'fail', 'error': 'Winner was found.'+str(game.winner)}, status=400)
                 # Determine the opponent's board
                 opponent_board = None
                 if game.current_turn == request.user:
@@ -133,7 +136,7 @@ def update_board(request):
                         opponent_board=game.player_1_board
 
                 if opponent_board is None:
-                    return JsonResponse({'status': 'fail', 'error': 'Game not found.'}, status=404)
+                    return JsonResponse({'status': 'fail', 'error': 'Not your turn.'}, status=400)
                 # Update the cell in the opponent's board data
                 opponent_board_data = eval(opponent_board.ship_positions)
                 if 0 <= row < 10 and 0 <= column < 10:  # Check if row and column are within bounds
@@ -147,6 +150,8 @@ def update_board(request):
                         else:
                             game.current_turn=game.player_1
                         game.updated_at=datetime.now()
+                        if(opponent_board_data.count("1")==0):
+                            game.winner=request.user
                         game.save()
 
                     # Save the updated board data back to the Board instance
@@ -214,42 +219,3 @@ def games_view(request):
 
     # Pass the games to the template
     return render(request, 'games_list.html', {'games': games})
-
-@login_required
-def board_view(request, game_id):
-    # Fetch the game by ID
-    game = get_object_or_404(Game, id=game_id)
-
-    # Get the boards for both players
-    player_1_board = game.player_1_board
-    player_2_board = game.player_2_board
-
-    # Determine the logged-in player
-    current_player = request.user
-
-    # Check if the logged-in player is part of this game
-    if current_player not in [game.player_1, game.player_2]:
-        return HttpResponse("You are not part of this game.")
-
-    # Access the board data for both players
-    board_1_data = eval(player_1_board.ship_positions) if player_1_board.ship_positions else []
-    board_2_data = eval(player_2_board.ship_positions) if player_2_board.ship_positions else []
-
-    # Prepare the board data for display
-    board_1 = {row_index: {col_index: cell_value for col_index, cell_value in enumerate(row)}
-               for row_index, row in enumerate(board_1_data)}
-    board_2 = {row_index: {col_index: cell_value for col_index, cell_value in enumerate(row)}
-               for row_index, row in enumerate(board_2_data)}
-
-    # Check whose turn it is and pass this information to the template
-    is_current_turn = game.current_turn == current_player
-
-    return render(request, 'board.html', {
-        'game': game,
-        'boards': {
-            game.player_1: board_1,
-            game.player_2: board_2,
-        },
-        'current_player': current_player,
-        'is_current_turn': is_current_turn,
-    })

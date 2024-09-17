@@ -13,6 +13,7 @@ class Game(models.Model):
     player_1_board = models.ForeignKey(Board, related_name='games_as_player1_board', on_delete=models.CASCADE,default=1)
     player_2_board = models.ForeignKey(Board, related_name='games_as_player2_board', on_delete=models.CASCADE,default=1)
     current_turn = models.ForeignKey('auth.User', related_name='current_turn_games', on_delete=models.CASCADE)
+    winner = models.ForeignKey('auth.User', related_name='winner', on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

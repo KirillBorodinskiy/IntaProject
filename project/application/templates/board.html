@@ -25,7 +25,7 @@
             <h2 style="{% if user.username|lower == player|lower %} color:rgb(0, 123, 255) {% else %} color:rgb(255 30 0)  {% endif %}">
                 {{ player|capfirst }}'s Board
             </h2>
-
+            {{winner}}
             {% if current_turn|lower == player|lower %}
                 <p style="color: green;">Make a move, {{ current_turn|capfirst }}!</p>
             {% else %}
@@ -51,7 +51,7 @@
                                 block_enemy cursor
                             {% endif %}" 
                             data-row="{{ row_index }}" data-col="{{ col_index }}"
-                            {% if user.username != player %}
+                            {% if user.username|lower != player|lower %}
                                 onclick="shoot({{ row_index }},{{ col_index }})" 
                             {% endif %}>
                             
@@ -95,7 +95,7 @@
                 // Handle errors (e.g., display an error message)
                 console.error('Error shooting:', result.message);
             }
-            location.reload();
+            //location.reload();
         })
         .catch(error => {
             console.error('Request failed:', error);
@@ -121,7 +121,7 @@
             .catch(error => {
                 console.error('Polling failed:', error);
             });*/
-            location.reload();
+            //location.reload();
     }
     
     // Poll every 5 seconds (adjust the interval as needed)
