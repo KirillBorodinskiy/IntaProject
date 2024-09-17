@@ -8,16 +8,29 @@
     <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
 </head>
 <body>
+    <div style="display:flex;flex-direction:column;margin-right:10px">
+    {% if winner %}
+    <div class="winner-message" style="text-align: center; background-color: #28a745; color: white; padding: 10px;border-radius:8px;opacity:0.95">
+        <h2>Congratulations,<br> {{ winner.username }} <br> has won the game!</h2>
+    </div>
+    {% endif %}
     <nav class="navbar">
         <ul class="navbar-menu">
             <li class="navbar-item">
                 <a href="{% url 'create_board' %}">Create a new board</a>
+            </li>
+            <li class="navbar-item">
                 <a href="{% url 'connect_tables'%}">Choose an opponent</a>
+            </li>
+                <li class="navbar-item">
                 <a href="{% url 'games_list'%}">My games</a>
+            </li>
+                <li class="navbar-item">
                 <a href="{% url 'logout' %}">Logout</a>
             </li>
         </ul>
     </nav>
+</div>
     <div class="game-boards container">
     
     {% for player, board in boards.items %}
@@ -25,11 +38,13 @@
             <h2 style="{% if user.username|lower == player|lower %} color:rgb(0, 123, 255) {% else %} color:rgb(255 30 0)  {% endif %}">
                 {{ player|capfirst }}'s Board
             </h2>
-            {{winner}}
-            {% if current_turn|lower == player|lower %}
-                <p style="color: green;">Make a move, {{ current_turn|capfirst }}!</p>
+            {% if winner %}
             {% else %}
-                <p style="color: gray;">Waiting for {{ current_turn|capfirst }} to make a move</p>
+                {% if current_turn|lower == player|lower %}
+                    <p style="color: green;">Make a move, {{ current_turn|capfirst }}!</p>
+                {% else %}
+                    <p style="color: gray;">Waiting for {{ current_turn|capfirst }} to make a move</p>
+                {% endif %}
             {% endif %}
             <div class="board-grid">
                 <div class="block cell"></div>  {# Empty corner cell #}

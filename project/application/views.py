@@ -120,9 +120,9 @@ def update_board(request):
                 try:
                     game = Game.objects.get(id=game_id)
                 except Game.DoesNotExist:
-                    return JsonResponse({'status': 'fail', 'error': 'Game not found.'}, status=404)
+                    return JsonResponse({'status': 'fail', 'error': 'Game not found.'}, status=400)
                 if(game.winner!=None):
-                    return JsonResponse({'status': 'fail', 'error': 'Winner was found.'+str(game.winner)}, status=400)
+                    return JsonResponse({'status': 'fail', 'error': 'Winner was found.'+str(game.winner)}, status=200)
                 # Determine the opponent's board
                 opponent_board = None
                 if game.current_turn == request.user:
@@ -146,9 +146,13 @@ def update_board(request):
                         else:
                             game.current_turn=game.player_1
                         game.updated_at=datetime.now()
-                        if(opponent_board_data.count("1")==0):
-                            game.winner=request.user
-                        game.save()
+                        
+                    # Checking the board to decide if we have a winner
+                    flattened_board = [cell for row in opponent_board_data for cell in row]
+
+                    if(flattened_board.count("1")==0):
+                        game.winner=request.user
+                    game.save()
 
                     # Save the updated board data back to the Board instance
                     opponent_board.ship_positions = repr(opponent_board_data)

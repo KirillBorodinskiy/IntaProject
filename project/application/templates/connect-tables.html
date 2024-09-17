@@ -17,6 +17,8 @@
     </ul>
 </nav>
 <div class="container">
+    <p>Here you can choose the boards to connect into 1 game.</p>
+    <p> After you connect them, just tell your opponent game's id and they can join the game from "My games"!</p>
 <form method="post">
     {% csrf_token %}
     {% for field in form %}
