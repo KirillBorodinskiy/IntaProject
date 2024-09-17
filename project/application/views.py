@@ -88,15 +88,11 @@ def create_board(request):
     # Associate the board with the current user
     player = request.user 
 
-    # Create a new Board instance with an empty ship_positions list
-    board = Board.objects.create(player=player)
+
 
     # Create an empty 10x10 board as a dictionary
     LocalBoard = {row_index: {col_index: '' for col_index in range(10)} for row_index in range(10)}
     ShipList = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1] 
-
-    # Store the board_id in the session 
-    request.session['board_id'] = board.id
 
     return render(request, 'create-board.html', {'board': LocalBoard, 'ShipList': ShipList, 'rn': rn, 'rl': rl})
 
@@ -194,8 +190,7 @@ def save_board(request):
         board_data = request.POST.get('boardData')
         
         # Get the Board instance 
-        board_id = request.session.get('board_id')
-        board = get_object_or_404(Board, id=board_id)
+        board = Board.objects.create(player=request.user)
 
         # Update the ship_positions field in the Board instance
         board.ship_positions = board_data
