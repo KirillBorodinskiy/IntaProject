@@ -288,3 +288,28 @@ p a:hover {
     background-color: #007bff;
     color: white;
 }
+
+.your-ship {
+    background-color: rgb(76, 175, 80);
+}
+
+.water{
+    background-color:#ccc;
+}
+
+.miss {
+    background-color: rgb(146, 212, 236);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+}
+
+.legend-item .legend-text {
+  margin-left: 10px;
+}
+
+.legend-item .legend-text-spaced {
+    margin-left: 5px;
+}

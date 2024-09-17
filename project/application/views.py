@@ -41,7 +41,7 @@ def connect_tables(request):
     return render(request, 'connect-tables.html', {'form': form})
 
 
-#Here is the main display of 2 boards inside a game
+#Here is the main display of 2 boards inside a gama
 @login_required
 def board_view(request, game_id):
     if not request.user.is_authenticated:
@@ -69,10 +69,21 @@ def board_view(request, game_id):
 
     winner = game.winner
 
-    board_1 = {row_index: {col_index: cell_value for col_index, cell_value in enumerate(row)} 
-                for row_index, row in enumerate(board_1_data)}
-    board_2 = {row_index: {col_index: cell_value for col_index, cell_value in enumerate(row)} 
-                for row_index, row in enumerate(board_2_data)}
+    board_1 = {}  # Initialize an empty dictionary
+    for row_index, row in enumerate(board_1_data):
+        row_dict = {}  # Create a dictionary for the current row
+        for col_index, cell_value in enumerate(row):
+            row_dict[col_index] = cell_value  # Add column index and cell value to the row dictionary
+        board_1[row_index] = row_dict  # Assign the row dictionary to the main board dictionary
+    
+
+    board_2 = {}  # Initialize an empty dictionary
+    for row_index, row in enumerate(board_2_data):
+        row_dict = {}  # Create a dictionary for the current row
+        for col_index, cell_value in enumerate(row):
+            row_dict[col_index] = cell_value  # Add column index and cell value to the row dictionary
+        board_2[row_index] = row_dict  # Assign the row dictionary to the main board dictionary
+
 
     return render(request, 'board.html', {'boards': {player_1: board_1, player_2: board_2}, 'rn': rn, 'rl': rl,'game_id':game_id, 'current_turn': game.current_turn.username,'winner':winner})
 

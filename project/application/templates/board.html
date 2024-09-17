@@ -32,6 +32,28 @@
     </nav>
 </div>
     <div class="game-boards container">
+
+        <div class="legend-container">
+            <h3>Block Legend:</h3>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="block your-ship"></div>
+                    <p class="legend-text legend-text-spaced">Your Ship</p>
+                </div>
+                <div class="legend-item">
+                    <div class="block hit"></div>
+                    <p class="legend-text legend-text-spaced">Hit</p>
+                </div>
+                <div class="legend-item">
+                    <div class="block miss"></div>
+                    <p class="legend-text legend-text-spaced">Miss</p>
+                </div>
+                <div class="legend-item">
+                    <div class="block water"></div>
+                    <p class="legend-text legend-text-spaced">Clear water</p>
+                </div>
+            </div>
+        </div>
     
     {% for player, board in boards.items %}
         <div class="game-board">
@@ -56,7 +78,7 @@
                     {% for col_index, cell in row.items %} 
                         <div id="grid{{row_index}}{{col_index}}" data-hidden-value="{{cell}}" 
                             class="block block1 
-                            {% if user.username|lower == player|lower %} 
+                            {% if user.username|lower == player|lower%} 
                                 {% if cell == '1' %} occupied
                                 {% elif cell == '2' %} hit
                                 {% elif cell == '3' %} missed {% endif %}

@@ -25,7 +25,16 @@
                     <div class="ship ship{{ship}}"></div>
 
                     <input type="radio" class="Ship{{ship}}Select" name="shipLength" value="ship{{ship}}">
-                    <label for="vertical">Ship {{ship}}</label>
+                    <label for="vertical">{% if ship == 4 %}
+                                                Aircraft carrier
+                                            {% elif ship == 3 %}
+                                                Battleship
+                                            {% elif ship == 2 %}
+                                                Submarine
+                                            {% elif ship == 1 %}
+                                                Destroyer
+                                            {% endif %}
+                    </label>
                 {% endfor %}
             </div>
             <div>

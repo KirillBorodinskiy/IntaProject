@@ -6,6 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="{% static 'application/styles.css' %}">
+    <style>
+        .centerDiv {
+            align-items: center;
+            text-align: center;
+        }
+
+        .centerDiv img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -20,14 +32,23 @@
     </nav>
     <div class="container centerDiv">
         <h2>Welcome, {{ user.username }}!</h2>
-        
-        <p>Battleship is a classic two-player strategy game where opponents attempt to sink each other's fleet of ships. Each player has their own grid where they secretly place their ships, while also having an identical grid used for tracking their guesses against their opponent's fleet.</p>
 
-        <p>The game is played in turns, with each player calling out specific coordinates on the grid in an effort to locate and sink their opponent’s ships. If the guessed coordinate hits part of a ship, it's marked as a "hit," and if it misses, it's marked as a "miss." The first player to sink all of the opponent's ships wins the game.</p>
+        <p>Battleship is a classic two-player strategy game where opponents attempt to sink each other's fleet of ships.</p>
 
-        <p>Each player’s fleet consists of several ships of varying lengths, such as an aircraft carrier, battleship, submarine, and destroyer. Players must place their ships on the grid, strategizing to hide them effectively while also planning their attacks to find and destroy the opponent's ships as quickly as possible.</p>
+        <p>Each player has their own grid where they place their ships, while also having an identical grid used for tracking opponent's fleet</p>
 
-        <p>Battleship combines strategic planning, guessing, and a bit of luck, making it a challenging and enjoyable game for players of all ages. The game ends when one player successfully sinks all of the other player's ships.</p>
+        <p>Each player’s fleet consists of several ships of varying lengths, such as an aircraft carrier, battleship, submarine, and destroyer.</p>
+
+        <img src="{% static 'battleship.png' %}" alt="Battleship Grid" style="width:350px;">
+
+        <p>The game is played in turns, with each player choose specific coordinates on the grid in an effort to locate and sink their opponent’s ships.</p>
+
+        <p> If the guessed coordinate hits part of a ship, it's marked as a "hit", and if it misses, it's marked as a "miss".</p>
+
+        <p> The first player to sink all of the opponent's ships wins the game.</p>
+
+        <img src="{% static 'nebattleship.png' %}" alt="Battleship Grid" style="width:500px;">
+
         <p>To make you new board choose "Create a new board" on the navigation menu
 
         <br>If you already have your board click "Choose an opponent"
