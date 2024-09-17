@@ -92,39 +92,36 @@
         const csrftoken ='{{csrf_token}}';
     
         // Send a POST request to the Django backend
-        fetch('/update-board/', {  // Adjust the URL if your view has a different name or path
+        fetch('/update-board/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': csrftoken // Include the CSRF token if you have CSRF protection enabled
+                'X-CSRFToken': csrftoken
             },
             body: JSON.stringify(data)
         })
         .then(response => response.json())
         .then(result => {
             if (result.status === 'success') {
-                // Handle the successful shot (e.g., update the board display, check for game over)
                 console.log('Shot successful:', result);
-                // You'll likely need to update the opponent's board display based on the 'result' data
             } else {
-                // Handle errors (e.g., display an error message)
                 console.error('Error shooting:', result.message);
             }
-            //location.reload();
+            location.reload();
         })
         .catch(error => {
             console.error('Request failed:', error);
         });
 
     }
-    function pollForUpdates() {
-        /*const csrftoken ='{{csrf_token}}';
-        const gameId = '{{game_id}}'; // Get the gameId from your template context
+    /*function pollForUpdates() {
+        const csrftoken ='{{csrf_token}}';
+        const gameId = '{{game_id}}';
         fetch(`/check_for_updates/${gameId}/`,{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': csrftoken // Include the CSRF token if you have CSRF protection enabled
+                'X-CSRFToken': csrftoken /
             }
         })
             .then(response => response.json())
@@ -135,11 +132,12 @@
             })
             .catch(error => {
                 console.error('Polling failed:', error);
-            });*/
+            });
             //location.reload();
     }
     
     // Poll every 5 seconds (adjust the interval as needed)
     setInterval(pollForUpdates, 5000); 
+    */
 </script>
 </html>

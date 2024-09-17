@@ -22,7 +22,6 @@ class Game(models.Model):
         player_1_board = self.player_1_board
         player_2_board = self.player_2_board
 
-        # Access ship positions directly from the TextField (now a 2D list)
         board_1 = player_1_board.ship_positions
         board_2 = player_2_board.ship_positions
 

@@ -9,6 +9,9 @@ from django.contrib.auth.decorators import login_required
 from datetime import datetime
 from django.utils import timezone
 
+
+# Here we are connecting 2 boards into 1 game
+@login_required
 def connect_tables(request):
     if request.method == 'POST':
         form = ConnectTablesForm(request.POST)
@@ -16,7 +19,7 @@ def connect_tables(request):
             player_1_board = form.cleaned_data['player_1_board']
             player_2_board = form.cleaned_data['player_2_board']
 
-            # Create a new Game instance and associate the boards
+            # Create a new Game instance
             game = Game.objects.create(
                 player_1=player_1_board.player, 
                 player_2=player_2_board.player,
@@ -37,6 +40,8 @@ def connect_tables(request):
 
     return render(request, 'connect-tables.html', {'form': form})
 
+
+#Here is the main display of 2 boards inside a game
 @login_required
 def board_view(request, game_id):
     if not request.user.is_authenticated:
@@ -50,7 +55,6 @@ def board_view(request, game_id):
 
     game = get_object_or_404(Game, id=game_id)
 
-    # Get the boards for both players
     player_1_board = game.player_1_board
     player_2_board = game.player_2_board
 
@@ -60,24 +64,27 @@ def board_view(request, game_id):
     if 'last_update_time' not in request.session:
         request.session['last_update_time'] = game.updated_at.strftime('%Y-%m-%d %H:%M:%S')
 
-    # Access ship positions directly from the TextField, converting to a list if needed
     board_1_data = eval(player_1_board.ship_positions) if player_1_board.ship_positions else []
     board_2_data = eval(player_2_board.ship_positions) if player_2_board.ship_positions else []
 
     winner = game.winner
 
-    # Construct the board dictionaries in the desired format
     board_1 = {row_index: {col_index: cell_value for col_index, cell_value in enumerate(row)} 
                 for row_index, row in enumerate(board_1_data)}
     board_2 = {row_index: {col_index: cell_value for col_index, cell_value in enumerate(row)} 
                 for row_index, row in enumerate(board_2_data)}
 
-    # Pass the boards to the template
     return render(request, 'board.html', {'boards': {player_1: board_1, player_2: board_2}, 'rn': rn, 'rl': rl,'game_id':game_id, 'current_turn': game.current_turn.username,'winner':winner})
 
+
+#Simple start page
+@login_required
 def start_page(request):
     return render(request, 'start-page.html')
 
+#Here we are creating a board
+#A function that generates a dictionary that we then use as a board
+@login_required
 def create_board(request):
     r = range(11)
     n = [0,1,2,3,4,5,6,7,8,9,10]
@@ -85,18 +92,13 @@ def create_board(request):
     rn = list(zip(r, n))
     rl = list(zip(r, l))
 
-    # Associate the board with the current user
-    player = request.user 
-
-
-
     # Create an empty 10x10 board as a dictionary
     LocalBoard = {row_index: {col_index: '' for col_index in range(10)} for row_index in range(10)}
     ShipList = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1] 
 
     return render(request, 'create-board.html', {'board': LocalBoard, 'ShipList': ShipList, 'rn': rn, 'rl': rl})
 
-
+#Simple registration
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -107,7 +109,7 @@ def register(request):
         form = UserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
 
-
+#This function is called using JS with csrftoken
 def update_board(request):
     if request.method == "POST":
         try:
@@ -146,7 +148,7 @@ def update_board(request):
                         else:
                             game.current_turn=game.player_1
                         game.updated_at=datetime.now()
-                        
+
                     # Checking the board to decide if we have a winner
                     flattened_board = [cell for row in opponent_board_data for cell in row]
 
@@ -169,6 +171,8 @@ def update_board(request):
 
     return JsonResponse({'status': 'fail', 'error': 'Invalid request method.'}, status=405)
 
+
+#This function should tell you if the update happened so you could update the page automatically. Called from JS with a csrftoken
 def check_for_updates(request, game_id):
     game = get_object_or_404(Game, id=game_id)
 
@@ -189,6 +193,8 @@ def check_for_updates(request, game_id):
     else:
         return JsonResponse({'update': False})
 
+#This function is used when we save a just created board
+@login_required
 def save_board(request):
     if request.method == 'POST':
         board_data = request.POST.get('boardData')
@@ -204,6 +210,7 @@ def save_board(request):
     else:
         return HttpResponse("Invalid request method")
 
+#Here we are displaying games of a user
 @login_required
 def games_view(request):
     # Get the logged-in user
