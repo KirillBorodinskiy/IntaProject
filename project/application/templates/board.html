@@ -103,17 +103,13 @@
 </body>
 <script>
     function shoot(row,col){
-    
-        // Create the data object to send
         const data = {
             row: row,
             col: col,
             game_id: {{game_id}},
         };
-        // Get the CSRF token
         const csrftoken ='{{csrf_token}}';
     
-        // Send a POST request to the Django backend
         fetch('/update-board/', {
             method: 'POST',
             headers: {
@@ -136,7 +132,8 @@
         });
 
     }
-    /*function pollForUpdates() {
+    function pollForUpdates() {
+        /*
         const csrftoken ='{{csrf_token}}';
         const gameId = '{{game_id}}';
         fetch(`/check_for_updates/${gameId}/`,{
@@ -155,11 +152,12 @@
             .catch(error => {
                 console.error('Polling failed:', error);
             });
-            //location.reload();
+            */
+            location.reload();
     }
     
-    // Poll every 5 seconds (adjust the interval as needed)
+    // Poll every 5 seconds
     setInterval(pollForUpdates, 5000); 
-    */
+    
 </script>
 </html>

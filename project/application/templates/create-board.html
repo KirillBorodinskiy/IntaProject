@@ -18,7 +18,7 @@
         </ul>
     </nav>
     <div class="container">
-        <h2>Place your ships!</h2>
+        <h1>Place your ships!</h1>
         <div class="currentShip">
             <div id="Ships">
                 {% for ship in ShipList%}
@@ -84,13 +84,10 @@
 
                 const board = getBoard();
 
-                // Serialize the board array
                 const boardData = JSON.stringify(board);
             
-                // Set the value of the hidden input to the board
                 const hiddenInput = document.getElementById('boardData').value = boardData;
             
-                // Submit the form
                 document.getElementById('Form').submit();
             }
 
@@ -110,7 +107,6 @@
 
             function updateHiddenFieldsAndSubmit(row, col) {
             
-                // Check if the orientation is vertical
                 const isVertical = document.getElementById("vertical").checked;
             
                 // Find the length of the currently selected ship
@@ -137,7 +133,7 @@
                 // Place the ship on the grid
                 placeShip(row, col, selectedShipLength, isVertical);
             
-                // Find the first ship element (representing the placed ship) that's not already colored and update it
+                // Find the first ship element that's not already colored and update it
                 const shipElements = document.getElementsByClassName("ship" + selectedShipLength);
                 for (const element of shipElements) {
                     if (element.style.backgroundColor != "rgb(76, 175, 80)") {
@@ -160,43 +156,42 @@
             }
 
             function resetBoard() {
-            // Loop through all grid cells and reset their hidden value and styles
-            for (let row_index = 0; row_index < 10; row_index++) {
-                for (let col_index = 0; col_index < 10; col_index++) {
-                    const currentCell = document.getElementById("grid" + row_index + col_index);
-                    if (currentCell) {
-                        currentCell.dataset.hiddenValue = 0; // Reset hidden value to 0 (empty)
-                        currentCell.style.backgroundColor = ""; // Reset the background color
+                // Loop through all grid cells and reset their hidden value and styles
+                for (let row_index = 0; row_index < 10; row_index++) {
+                    for (let col_index = 0; col_index < 10; col_index++) {
+                        const currentCell = document.getElementById("grid" + row_index + col_index);
+                        if (currentCell) {
+                            currentCell.dataset.hiddenValue = 0; // Reset hidden value to 0 (empty)
+                            currentCell.style.backgroundColor = ""; // Reset the background color
+                        }
                     }
                 }
-            }
 
-            // Reset the ship placement tracker
-            for (let shipLength = 1; shipLength <= 4; shipLength++) {
-                shipPlacementTracker[shipLength] = 0; // Reset the count of placed ships
-            }
-
-            // Uncheck all ship radio buttons
-            const shipRadios = document.querySelectorAll('input[name="shipLength"]');
-            shipRadios.forEach(radio => {
-                radio.checked = false; // Uncheck all ship options
-            });
-
-            // Reset the ships in the selection area to their default color
-            for (let shipLength = 1; shipLength <= 4; shipLength++) {
-                const shipElements = document.getElementsByClassName("ship" + shipLength);
-                for (const element of shipElements) {
-                    element.style.backgroundColor = ""; // Reset background color of ship elements
+                // Reset the ship placement tracker
+                for (let shipLength = 1; shipLength <= 4; shipLength++) {
+                    shipPlacementTracker[shipLength] = 0;
                 }
-            }
 
-            // Disable the "Send it!" button again since no ships are placed
-            const submitButton = document.getElementById("submitter");
-            submitButton.disabled = true;
-            submitButton.style.backgroundColor = "rgb(99,102,106)"; // Change button color back to gray
+                // Uncheck all ship radio buttons
+                const shipRadios = document.querySelectorAll('input[name="shipLength"]');
+                shipRadios.forEach(radio => {
+                    radio.checked = false; // Uncheck all ship options
+                });
 
-            // Optionally, reset the first ship option to be selected again
-            selectNextAvailableShip();
+                // Reset the ships in the selection area to their default color
+                for (let shipLength = 1; shipLength <= 4; shipLength++) {
+                    const shipElements = document.getElementsByClassName("ship" + shipLength);
+                    for (const element of shipElements) {
+                        element.style.backgroundColor = ""; 
+                    }
+                }
+
+                // Disable the send button again since no ships are placed
+                const submitButton = document.getElementById("submitter");
+                submitButton.disabled = true;
+                submitButton.style.backgroundColor = "rgb(99,102,106)"; // Change button color back to gray
+
+                selectNextAvailableShip();
         }
             
             // Function to check if the maximum number of ships of a given length has been placed
@@ -264,7 +259,6 @@
 
             // Function to check if all ships are placed and enable the submit button
             function checkAllShipsPlaced() {
-                // Required number of ships per length (for example: 1 ship of length 4, 2 of length 3, etc.)
                 const requiredShips = {
                     1: 4, // Four 1-unit ships
                     2: 3, // Three 2-unit ships
@@ -286,10 +280,10 @@
                 const submitButton = document.getElementById("submitter");
                 if (allShipsPlaced) {
                     submitButton.disabled = false;
-                    submitButton.style.backgroundColor = " rgb(0, 123, 255)"; // Enable button with a green color
+                    submitButton.style.backgroundColor = " rgb(0, 123, 255)";
                 } else {
                     submitButton.disabled = true;
-                    submitButton.style.backgroundColor = "rgb(99,102,106)"; // Keep button disabled and gray
+                    submitButton.style.backgroundColor = "rgb(99,102,106)"; 
                 }
             }
             

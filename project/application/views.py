@@ -10,9 +10,10 @@ from datetime import datetime
 from django.utils import timezone
 
 
-# Here we are connecting 2 boards into 1 game
 @login_required
 def connect_tables(request):
+    '''Here we are connecting 2 boards into 1 game'''
+
     if request.method == 'POST':
         form = ConnectTablesForm(request.POST)
         if form.is_valid():
@@ -41,12 +42,11 @@ def connect_tables(request):
     return render(request, 'connect-tables.html', {'form': form})
 
 
-#Here is the main display of 2 boards inside a gama
+
 @login_required
 def board_view(request, game_id):
-    if not request.user.is_authenticated:
-        return redirect('login')
-    
+    '''Here is the main display of 2 boards inside a gama'''
+
     r = range(11)
     n = [0,1,2,3,4,5,6,7,8,9,10]
     l = ['Z','A','B','C','D','E','F','G','H','I','J']
@@ -88,15 +88,15 @@ def board_view(request, game_id):
     return render(request, 'board.html', {'boards': {player_1: board_1, player_2: board_2}, 'rn': rn, 'rl': rl,'game_id':game_id, 'current_turn': game.current_turn.username,'winner':winner})
 
 
-#Simple start page
 @login_required
 def start_page(request):
+    '''A simple start page'''
     return render(request, 'start-page.html')
 
-#Here we are creating a board
-#A function that generates a dictionary that we then use as a board
+
 @login_required
 def create_board(request):
+    '''A function that generates a dictionary that we then use as a board'''
     r = range(11)
     n = [0,1,2,3,4,5,6,7,8,9,10]
     l = ['Z','A','B','C','D','E','F','G','H','I','J']
@@ -120,8 +120,8 @@ def register(request):
         form = UserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
 
-#This function is called using JS with csrftoken
 def update_board(request):
+    '''This function is called using JS with csrftoken'''
     if request.method == "POST":
         try:
             data = json.loads(request.body)
@@ -176,15 +176,16 @@ def update_board(request):
                     return JsonResponse({'status': 'fail', 'error': 'Invalid row or column.'}, status=400)
 
             else:
-                return JsonResponse({'status': 'fail', 'error': ''+str(row)+', '+str(column)+', and '+str(game_id)+' are required.'}, status=400)
+                return JsonResponse({'status': 'fail', 'error': 'row '+str(row)+', column '+str(column)+', and game_id'+str(game_id)+' are required.'}, status=400)
         except json.JSONDecodeError:
             return JsonResponse({'status': 'fail', 'error': 'Invalid JSON format.'}, status=400)
 
     return JsonResponse({'status': 'fail', 'error': 'Invalid request method.'}, status=405)
 
 
-#This function should tell you if the update happened so you could update the page automatically. Called from JS with a csrftoken
+
 def check_for_updates(request, game_id):
+    '''This function should tell you if the update happened so you could update the page automatically. Called from JS with a csrftoken'''
     game = get_object_or_404(Game, id=game_id)
 
     # Check if it's the current user's turn
@@ -204,9 +205,9 @@ def check_for_updates(request, game_id):
     else:
         return JsonResponse({'update': False})
 
-#This function is used when we save a just created board
 @login_required
 def save_board(request):
+    '''This function is used when we save a just created board'''
     if request.method == 'POST':
         board_data = request.POST.get('boardData')
         
@@ -221,9 +222,9 @@ def save_board(request):
     else:
         return HttpResponse("Invalid request method")
 
-#Here we are displaying games of a user
 @login_required
 def games_view(request):
+    '''Here we are displaying games of a user'''
     # Get the logged-in user
     user = request.user
 
