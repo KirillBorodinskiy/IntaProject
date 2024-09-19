@@ -10,10 +10,10 @@ body{
 .game-info {
     width: 100%;
     text-align: center;
-    background-color: #f8f9fa; /* Light gray background for better visibility */
+    background-color: #f8f9fa;
     padding: 10px;
-    border-bottom: 2px solid #ccc; /* Add a slight border under it */
-    margin-bottom: 20px; /* Space between the current turn info and the game boards */
+    border-bottom: 2px solid #ccc;
+    margin-bottom: 20px;
     font-size: 18px;
     font-weight: bold;
 }
@@ -180,23 +180,23 @@ p a:hover {
 .block {
     width: 30px;
     height: 30px;
-    border: 1px solid #ccc; /* Light gray border */
-    background-color: #eee; /* Or any default color */
+    border: 1px solid #ccc;
+    background-color: #eee; 
     text-align: center;
 }
 .cursor{
-    cursor: pointer; /* Indicate clickable */
+    cursor: pointer;
 }
 .block_enemy:hover {
-    background-color: rgb(232, 90, 90); /* Light gray background on hover */
+    background-color: rgb(232, 90, 90);
 }
 
 .occupied {
-    background-color: rgb(76, 175, 80); /* Green for occupied cells (ships) */
+    background-color: rgb(76, 175, 80);
     color: white;
 }
 .board-container {
-    display: inline-block; /* or flex, depending on your layout */
+    display: inline-block;
 }
 
 .row-labels {
@@ -208,7 +208,7 @@ p a:hover {
     height: 30px;
     border: 1px solid #ccc;
     text-align: center;
-    line-height: 30px; /* Vertically center text */
+    line-height: 30px;
 }
 
 .game-boards {
@@ -223,23 +223,21 @@ p a:hover {
     padding:20px;
 }
 
-/* Core CSS Grid layout for the board */
 .board-grid {
     display: grid;
-    grid-template-columns: repeat(11, 1fr); /* 11 columns (10 for board + 1 for labels) */
-    grid-template-rows: repeat(11, 1fr);    /* 11 rows */
+    grid-template-columns: repeat(11, 1fr); 
+    grid-template-rows: repeat(11, 1fr); 
 }
 
-/* Styling for individual cells within the grid */
 .cell {
-    width: 30px; /* Adjust as needed */
+    width: 30px;
     height: 30px;
     background-color: #eee; 
     border: 1px solid #ccc;
     color:black;
 }
 
-/* Styling for label cells (first row and first column) */
+
 .cell.label {
     font-weight: bold;
 }
@@ -258,6 +256,7 @@ p a:hover {
 }
 
 .navbar {
+    margin-right:10px;
     background-color: #333;
     padding: 10px 20px;
     border-radius: 5%;
@@ -312,4 +311,14 @@ p a:hover {
 
 .legend-item .legend-text-spaced {
     margin-left: 5px;
+}
+.centerDiv {
+    align-items: center;
+    text-align: center;
+}
+
+.centerDiv img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 20px;
 }

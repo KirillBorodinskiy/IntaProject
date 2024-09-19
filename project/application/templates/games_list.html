@@ -39,7 +39,9 @@
                     <b>Created on:</b> {{ game.created_at|date:"d/m/Y, H:i" }}
                     <br>
                     <b>Status: </b>
-                    {% if game.current_turn == user %}
+                    {% if game.winner %}
+                        {{game.winner}} won!
+                    {% elif game.current_turn == user %}
                         Your turn
                     {% else %}
                         {{ game.current_turn.username }}'s turn

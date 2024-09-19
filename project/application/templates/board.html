@@ -14,7 +14,7 @@
         <h2>Congratulations,<br> {{ winner.username }} <br> has won the game!</h2>
     </div>
     {% endif %}
-    <nav class="navbar">
+    <nav class="navbar" style="margin:0px;">
         <ul class="navbar-menu">
             <li class="navbar-item">
                 <a href="{% url 'create_board' %}">Create a new board</a>
@@ -97,7 +97,6 @@
                 {% endfor %} 
             </div>
         </div>
-        {% if has_ships %} <div class="container">GG</div> {% endif %}
     {% endfor %}
     </div>
 </body>
